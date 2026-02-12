@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import com.goodwy.commons.extensions.toast
 import com.google.gson.Gson
 import com.goodwy.commons.helpers.LocalContactsHelper
 import com.goodwy.commons.helpers.MyContactsContentProvider

@@ -4,7 +4,15 @@
     <string name="app_name" translatable="false">Right Contacts</string>
 
     <!-- Release notes -->
-    <string name="release_701">
+    <string name="release_820">
+        Compatibility updates for Android 15 &amp; 16\n
+        Changed the logic of styles\n
+        Changed colors of context action modes\n
+        Added ‘App font’ option\n
+        Added ‘Swipe width’ option\n
+        Added ‘Show search bar’ option\n
+        Changed swipe behavior, removed inertia\n
+        Changed input for relationship field and added translations\n
         Fixed bugs, improved stability
     </string>
     <string name="release_700">
@@ -19,9 +27,6 @@
         Added the ability to disable one of the swipes\n
         Fixed bugs, improved stability
     </string>
-    <string name="release_621">
-        Bug fixes
-    </string>
     <string name="release_620">
         Added additional fields for simple private contacts\n
         It is now impossible to set a ringtone for private contacts, because the system does not have access to the private contact and will not be able to use the selected ringtone.\n
@@ -29,9 +34,6 @@
     </string>
     <string name="release_612">
         Removed irrelevant messengers, added relevant ones\n
-        Improved performance, bug fixes
-    </string>
-    <string name="release_611">
         Improved performance, bug fixes
     </string>
     <string name="release_610">
@@ -45,9 +47,6 @@
     <string name="release_524">
         Changed swipe behaviour and added animation\n
         Reduced the contact icon when viewing call details\n
-        Fixed bugs
-    </string>
-    <string name="release_523">
         Fixed bugs
     </string>
     <string name="release_522">
@@ -71,8 +70,5 @@
     <string name="release_500">
         Improved interface\n
         Fixed bugs, improved stability
-    </string>
-    <string name="release_414">
-        Bug fixes
     </string>
 </resources>

@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Nada dering tidak tersedia untuk kontak pribadi</string>
-    <string name="show_private_contacts_g">Tampilkan kontak pribadi ke Right Dialer dan Right Messages</string>
+    <string name="show_private_contacts_g">Tampilkan kontak pribadi di aplikasi Telepon, Pesan, dan Kalender di sebelah kanan.</string>
+    <string name="show_private_contacts_n">Tampilkan kontak pribadi di aplikasi AlRight Phone, Messages, dan Calendar.</string>
+    <string name="on_favorite_click">Saat Anda mengklik favorit</string>
 
 </resources>

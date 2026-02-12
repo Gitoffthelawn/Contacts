@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">La sonnerie n’est pas disponible pour un contact privé</string>
-    <string name="show_private_contacts_g">Afficher les contacts privés sur Right Dialer et Right Messages</string>
+    <string name="show_private_contacts_g">Afficher les contacts personnels dans les applications Téléphone, Messages et Calendrier de droite</string>
+    <string name="show_private_contacts_n">Afficher les contacts personnels dans les applications Téléphone, Messages et Calendrier d\'AlRight</string>
+    <string name="on_favorite_click">Lorsque vous cliquez sur un favori</string>
 
 </resources>

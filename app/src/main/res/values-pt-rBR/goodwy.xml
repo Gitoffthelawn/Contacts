@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">O toque não está disponível para contatos privados</string>
-    <string name="show_private_contacts_g">Mostrar contatos privados para Right Dialer e Right Messages</string>
+    <string name="show_private_contacts_g">Exiba seus contatos pessoais nos aplicativos Telefone, Mensagens e Calendário corretos.</string>
+    <string name="show_private_contacts_n">Exiba seus contatos pessoais nos aplicativos AlRight Phone, Mensagens e Calendário.</string>
+    <string name="on_favorite_click">Ao clicar em um favorito</string>
 
 </resources>

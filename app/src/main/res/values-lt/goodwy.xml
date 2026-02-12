@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Skambėjimo tonas negalimas privačiam kontaktui</string>
-    <string name="show_private_contacts_g">Rodyti privačius kontaktus dešiniajame rinkiklyje ir dešiniajame pranešimuose</string>
+    <string name="show_private_contacts_g">Rodyti asmeninius kontaktus tinkamose telefono, pranešimų ir kalendoriaus programose</string>
+    <string name="show_private_contacts_n">Rodyti asmeninius kontaktus „AlRight“ telefono, pranešimų ir kalendoriaus programose</string>
+    <string name="on_favorite_click">Kai spustelėsite mėgstamiausią</string>
 
 </resources>

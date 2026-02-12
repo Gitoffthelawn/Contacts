@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Klingelton ist für den privaten Kontakt nicht verfügbar</string>
-    <string name="show_private_contacts_g">Private Kontakte für Right Dialer und Right Messages anzeigen</string>
+    <string name="show_private_contacts_g">Persönliche Kontakte in den Apps „Telefon“, „Nachrichten“ und „Kalender“ rechts anzeigen</string>
+    <string name="show_private_contacts_n">Persönliche Kontakte in den AlRight-Apps für Telefon, Nachrichten und Kalender anzeigen</string>
+    <string name="on_favorite_click">Wenn Sie auf einen Favoriten klicken</string>
 
 </resources>

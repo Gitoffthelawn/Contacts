@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.util.AttributeSet
-import androidx.recyclerview.widget.RecyclerView
 import com.goodwy.commons.extensions.*
 import com.goodwy.commons.models.contacts.Contact
 import com.goodwy.contacts.R
@@ -16,6 +15,7 @@ import com.goodwy.contacts.adapters.ContactsAdapter
 import com.goodwy.contacts.databinding.FragmentContactsBinding
 import com.goodwy.contacts.databinding.FragmentLettersLayoutBinding
 import com.goodwy.contacts.extensions.config
+import com.goodwy.contacts.extensions.viewContact
 import com.goodwy.contacts.helpers.LOCATION_CONTACTS_TAB
 import com.goodwy.contacts.interfaces.RefreshContactsListener
 
@@ -92,9 +92,13 @@ class ContactsFragment(context: Context, attributeSet: AttributeSet) : MyViewPag
                 removeListener = null,
                 recyclerView = innerBinding.fragmentList,
                 enableDrag = false,
-            ) {
-                (activity as RefreshContactsListener).contactClicked(it as Contact)
-            }.apply {
+                itemClick = {
+                    (activity as RefreshContactsListener).contactClicked(it as Contact)
+                },
+                profileIconClick = {
+                    activity?.viewContact(it as Contact)
+                }
+            ).apply {
                 innerBinding.fragmentList.adapter = this
             }
 

@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Ringsignalen är inte tillgänglig för privat kontakt</string>
-    <string name="show_private_contacts_g">Visa privata kontakter för höger uppringare och högermeddelanden</string>
+    <string name="show_private_contacts_g">Visa personliga kontakter i apparna för högertelefon, Meddelanden och Kalender</string>
+    <string name="show_private_contacts_n">Visa personliga kontakter i AlRight-apparna Telefon, Meddelanden och Kalender</string>
+    <string name="on_favorite_click">När du klickar på en favorit</string>
 
 </resources>

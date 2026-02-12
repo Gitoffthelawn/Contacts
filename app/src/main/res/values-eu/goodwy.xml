@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Dei-tonua ez dago erabilgarri kontaktu pribatuetarako</string>
-    <string name="show_private_contacts_g">Erakutsi kontaktu pribatuak Eskuineko markagailuari eta Eskuineko mezuei</string>
+    <string name="show_private_contacts_g">Erakutsi kontaktu pertsonalak Eskuineko Telefonoan, Mezuetan eta Egutegiko aplikazioetan</string>
+    <string name="show_private_contacts_n">Erakutsi kontaktu pertsonalak AlRight Telefonoa, Mezuak eta Egutegia aplikazioetan</string>
+    <string name="on_favorite_click">Gogoko batean klik egiten duzunean</string>
 
 </resources>

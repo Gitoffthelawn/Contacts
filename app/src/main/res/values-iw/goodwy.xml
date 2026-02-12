@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">רינגטון אינו זמין ליצירת קשר פרטי</string>
-    <string name="show_private_contacts_g">הצג אנשי קשר פרטיים לחייגן הימני ולהודעות הימניות</string>
+    <string name="show_private_contacts_g">הצג אנשי קשר אישיים באפליקציות הטלפון, ההודעות והיומן הנכונות</string>
+    <string name="show_private_contacts_n">הצג אנשי קשר אישיים באפליקציות AlRight Phone, Messages ו-Callenday</string>
+    <string name="on_favorite_click">כשאתה לוחץ על פריט מועדף</string>
 
 </resources>

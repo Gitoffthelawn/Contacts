@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -14,19 +13,23 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.ContactsContract.CommonDataKinds
-import android.provider.ContactsContract.CommonDataKinds.*
+import android.provider.ContactsContract.CommonDataKinds.Im
+import android.provider.ContactsContract.CommonDataKinds.Note
+import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.provider.ContactsContract.CommonDataKinds.Relation
+import android.provider.ContactsContract.CommonDataKinds.StructuredName
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
+import android.provider.ContactsContract.CommonDataKinds.Website
 import android.provider.MediaStore
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.telephony.PhoneNumberUtils
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
 import com.goodwy.commons.dialogs.ConfirmationAdvancedDialog
 import com.goodwy.commons.dialogs.NewAppDialog
@@ -36,15 +39,26 @@ import com.goodwy.commons.extensions.*
 import com.goodwy.commons.helpers.*
 import com.goodwy.commons.models.PhoneNumber
 import com.goodwy.commons.models.RadioItem
-import com.goodwy.commons.models.contacts.*
+import com.goodwy.commons.models.contacts.Address
+import com.goodwy.commons.models.contacts.Contact
 import com.goodwy.commons.models.contacts.ContactRelation
 import com.goodwy.commons.models.contacts.Email
 import com.goodwy.commons.models.contacts.Event
+import com.goodwy.commons.models.contacts.Group
+import com.goodwy.commons.models.contacts.IM
 import com.goodwy.commons.models.contacts.Organization
 import com.goodwy.commons.views.MyAutoCompleteTextView
 import com.goodwy.contacts.R
 import com.goodwy.contacts.adapters.AutoCompleteTextViewAdapter
-import com.goodwy.contacts.databinding.*
+import com.goodwy.contacts.databinding.ActivityEditContactBinding
+import com.goodwy.contacts.databinding.ItemEditEmailBinding
+import com.goodwy.contacts.databinding.ItemEditGroupBinding
+import com.goodwy.contacts.databinding.ItemEditImBinding
+import com.goodwy.contacts.databinding.ItemEditPhoneNumberBinding
+import com.goodwy.contacts.databinding.ItemEditRelationBinding
+import com.goodwy.contacts.databinding.ItemEditStructuredAddressBinding
+import com.goodwy.contacts.databinding.ItemEditWebsiteBinding
+import com.goodwy.contacts.databinding.ItemEventBinding
 import com.goodwy.contacts.dialogs.CustomLabelDialog
 import com.goodwy.contacts.dialogs.ManageVisibleFieldsDialog
 import com.goodwy.contacts.dialogs.MyDatePickerDialog
@@ -59,6 +73,7 @@ import com.mikhaellopez.rxanimation.RxAnimation
 import com.mikhaellopez.rxanimation.shake
 import java.util.LinkedList
 import java.util.Locale
+import kotlin.collections.forEachIndexed
 
 class EditContactActivity : ContactActivity() {
     companion object {
@@ -92,8 +107,6 @@ class EditContactActivity : ContactActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        showTransparentTop = true
-        isMaterialActivity = true
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
@@ -101,16 +114,10 @@ class EditContactActivity : ContactActivity() {
             return
         }
 
-        updateMaterialActivityViews(
-            binding.contactWrapper,
-            binding.contactHolder,
-            useTransparentNavigation = true,
-            useTopSearchMenu = false
+        setupEdgeToEdge(
+            padBottomImeAndSystem = listOf(binding.contactScrollview)
         )
-
         surfaceColor = if ((isLightTheme() || isGrayTheme()) && !isDynamicTheme()) Color.WHITE else getSurfaceColor()
-        binding.contactWrapper.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        setupInsets()
         setupMenu()
 
         val action = intent.action
@@ -324,10 +331,11 @@ class EditContactActivity : ContactActivity() {
         }
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressedCompat(): Boolean {
         maybeShowUnsavedChangesDialog {
-            super.onBackPressed()
+            performDefaultBack()
         }
+        return true
     }
 
     private fun maybeShowUnsavedChangesDialog(discard: () -> Unit) {
@@ -352,23 +360,10 @@ class EditContactActivity : ContactActivity() {
         }
     }
 
-    private fun setupInsets() {
-        binding.contactWrapper.setOnApplyWindowInsetsListener { _, insets ->
-            val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(insets)
-            val imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
-            binding.contactScrollview.run {
-                setPadding(paddingLeft, paddingTop, paddingRight, imeInsets.bottom)
-            }
-            insets
-        }
-    }
-
     private fun setupMenu() {
         val contrastColor = getProperBackgroundColor().getContrastColor()
         val primaryColor = getProperPrimaryColor()
         val iconColor = if (baseConfig.topAppBarColorIcon) primaryColor else contrastColor
-        //(binding.contactAppbar.layoutParams as RelativeLayout.LayoutParams).topMargin = statusBarHeight
-        (binding.contactWrapper.layoutParams as FrameLayout.LayoutParams).topMargin = statusBarHeight
         binding.contactToolbar.overflowIcon = resources.getColoredDrawableWithColor(com.goodwy.commons.R.drawable.ic_three_dots_vector, iconColor)
         binding.contactToolbar.menu.apply {
             updateMenuItemColors(this)
@@ -636,6 +631,8 @@ class EditContactActivity : ContactActivity() {
                     beVisible()
                     setOnClickListener {
                         binding.contactNumbersHolder.removeView(numberHolder.root)
+                        hideKeyboard()
+                        initNumberHolders()
                     }
                 }
             }
@@ -1125,6 +1122,7 @@ class EditContactActivity : ContactActivity() {
             }
         }
 
+        // Phone Numbers
         if (contact!!.phoneNumbers.isEmpty()) {
             //binding.contactNumbersHolder.removeAllViews()
             val numberHolder = ItemEditPhoneNumberBinding.bind(binding.contactNumbersHolder.getChildAt(0))
@@ -1132,6 +1130,16 @@ class EditContactActivity : ContactActivity() {
                 setTextColor(getProperPrimaryColor)
                 setupPhoneNumberTypePicker(this, DEFAULT_PHONE_NUMBER_TYPE, "")
             }
+
+            numberHolder.contactNumberRemove.apply {
+                beVisible()
+                setOnClickListener {
+                    binding.contactNumbersHolder.removeView(numberHolder.root)
+                    hideKeyboard()
+                    initNumberHolders()
+                }
+            }
+
             numberHolder.dividerVerticalContactNumber.setBackgroundColor(getProperTextColor)
             numberHolder.dividerContactNumber.setBackgroundColor(getProperTextColor)
             if (config.formatPhoneNumbers) numberHolder.contactNumber.addTextChangedListener(PhoneNumberFormattingTextWatcher(Locale.getDefault().country))
@@ -1141,33 +1149,7 @@ class EditContactActivity : ContactActivity() {
             binding.contactNumbersAddNewHolder.setBackgroundColor(surfaceColor)
         }
 
-        if (contact!!.emails.isEmpty()) {
-            //binding.contactEmailsHolder.removeAllViews()
-            val emailHolder = ItemEditEmailBinding.bind(binding.contactEmailsHolder.getChildAt(0))
-            emailHolder.contactEmailType.apply {
-                setTextColor(getProperPrimaryColor)
-                setupEmailTypePicker(this, DEFAULT_EMAIL_TYPE, "")
-            }
-            emailHolder.dividerVerticalContactEmail.setBackgroundColor(getProperTextColor)
-            emailHolder.dividerContactEmail.setBackgroundColor(getProperTextColor)
-
-            binding.contactEmailsHolder.setBackgroundColor(surfaceColor)
-            binding.contactEmailsAddNewHolder.setBackgroundColor(surfaceColor)
-        }
-
-        if (contact!!.addresses.isEmpty()) {
-            val structuredAddressHolder = ItemEditStructuredAddressBinding.bind(binding.contactAddressesHolder.getChildAt(0))
-            structuredAddressHolder.contactStructuredAddressType.apply {
-                setTextColor(getProperPrimaryColor)
-                setupAddressTypePicker(this, DEFAULT_ADDRESS_TYPE, "")
-            }
-            structuredAddressHolder.dividerVerticalContactAddress.setBackgroundColor(getProperTextColor)
-            structuredAddressHolder.dividerContactAddress.setBackgroundColor(getProperTextColor)
-
-            binding.contactAddressesHolder.setBackgroundColor(surfaceColor)
-            binding.contactAddressesAddNewHolder.setBackgroundColor(surfaceColor)
-        }
-
+        // IMs
         if (contact!!.IMs.isEmpty()) {
             //binding.contactImsHolder.removeAllViews()
             val IMHolder = ItemEditImBinding.bind(binding.contactImsHolder.getChildAt(0))
@@ -1175,6 +1157,14 @@ class EditContactActivity : ContactActivity() {
                 setTextColor(getProperPrimaryColor)
                 setupIMTypePicker(this, DEFAULT_IM_TYPE, "", IMHolder.contactIm)
             }
+
+            IMHolder.contactImRemove.apply {
+                beVisible()
+                setOnClickListener {
+                    binding.contactImsHolder.removeView(IMHolder.root)
+                }
+            }
+
             IMHolder.dividerVerticalContactIm.setBackgroundColor(getProperTextColor)
             IMHolder.dividerContactIm.setBackgroundColor(getProperTextColor)
 
@@ -1182,12 +1172,67 @@ class EditContactActivity : ContactActivity() {
             binding.contactImsAddNewHolder.setBackgroundColor(surfaceColor)
         }
 
+        // Emails
+        if (contact!!.emails.isEmpty()) {
+            //binding.contactEmailsHolder.removeAllViews()
+            val emailHolder = ItemEditEmailBinding.bind(binding.contactEmailsHolder.getChildAt(0))
+            emailHolder.contactEmailType.apply {
+                setTextColor(getProperPrimaryColor)
+                setupEmailTypePicker(this, DEFAULT_EMAIL_TYPE, "")
+            }
+
+            emailHolder.contactEmailRemove.apply {
+                beVisible()
+                setOnClickListener {
+                    binding.contactEmailsHolder.removeView(emailHolder.root)
+                }
+            }
+
+            emailHolder.dividerVerticalContactEmail.setBackgroundColor(getProperTextColor)
+            emailHolder.dividerContactEmail.setBackgroundColor(getProperTextColor)
+
+            binding.contactEmailsHolder.setBackgroundColor(surfaceColor)
+            binding.contactEmailsAddNewHolder.setBackgroundColor(surfaceColor)
+        }
+
+        // Addresses
+        if (contact!!.addresses.isEmpty()) {
+            val structuredAddressHolder = ItemEditStructuredAddressBinding.bind(binding.contactAddressesHolder.getChildAt(0))
+            structuredAddressHolder.contactStructuredAddressType.apply {
+                setTextColor(getProperPrimaryColor)
+                setupAddressTypePicker(this, DEFAULT_ADDRESS_TYPE, "")
+            }
+
+            structuredAddressHolder.contactAddressRemove.apply {
+                beVisible()
+                setOnClickListener {
+                    binding.contactAddressesHolder.removeView(structuredAddressHolder.root)
+                }
+            }
+
+            structuredAddressHolder.dividerVerticalContactAddress.setBackgroundColor(getProperTextColor)
+            structuredAddressHolder.dividerContactAddress.setBackgroundColor(getProperTextColor)
+
+            binding.contactAddressesHolder.setBackgroundColor(surfaceColor)
+            binding.contactAddressesAddNewHolder.setBackgroundColor(surfaceColor)
+        }
+
+        // Events
         if (contact!!.events.isEmpty()) {
             //binding.contactEventsHolder.removeAllViews()
             val eventHolder = ItemEventBinding.bind(binding.contactEventsHolder.getChildAt(0))
             eventHolder.apply {
                 setupEventTypePicker(this, label = "")
             }
+
+            eventHolder.contactEventRemove.apply {
+                beVisible()
+                setOnClickListener {
+                    resetContactEvent(eventHolder.contactEvent, this)
+                    binding.contactEventsHolder.removeView(eventHolder.root)
+                }
+            }
+
             eventHolder.contactEventType.setTextColor(getProperPrimaryColor)
             eventHolder.dividerVerticalContactEvent.setBackgroundColor(getProperTextColor)
             eventHolder.dividerContactEvent.setBackgroundColor(getProperTextColor)
@@ -1196,14 +1241,38 @@ class EditContactActivity : ContactActivity() {
             binding.contactEventsAddNewHolder.setBackgroundColor(surfaceColor)
         }
 
+        // Relations
         if (contact!!.relations.isEmpty()) {
             //binding.contactRelationsHolder.removeAllViews()
             val relationHolder = ItemEditRelationBinding.bind(binding.contactRelationsHolder.getChildAt(0))
             relationHolder.contactRelationType.apply {
                 setTextColor(getProperPrimaryColor)
                 setupRelationTypePicker(this, DEFAULT_RELATION_TYPE, "")
+
             }
-            relationHolder.contactRelationSelectContact.applyColorFilter(getProperTextColor)
+
+            relationHolder.contactRelationSelectContact.apply {
+                applyColorFilter(getProperTextColor)
+                setOnClickListener {
+                    SelectContactsDialog(
+                        this@EditContactActivity,
+                        initialContacts = allContacts,
+                        allowSelectMultiple = false,
+                        showOnlyContactsWithNumber = false
+                    ) { addedContacts, _ ->
+                        val name = addedContacts.firstOrNull()?.getNameToDisplay()
+                        if (name != null) relationHolder.contactRelation.setText(name)
+                    }
+                }
+            }
+
+            relationHolder.contactRelationRemove.apply {
+                beVisible()
+                setOnClickListener {
+                    binding.contactRelationsHolder.removeView(relationHolder.root)
+                }
+            }
+
             relationHolder.dividerVerticalContactRelation.setBackgroundColor(getProperTextColor)
             relationHolder.dividerContactRelation.setBackgroundColor(getProperTextColor)
 
@@ -1211,10 +1280,12 @@ class EditContactActivity : ContactActivity() {
             binding.contactRelationsAddNewHolder.setBackgroundColor(surfaceColor)
         }
 
+        // Notes
         if (contact!!.notes.isEmpty()) {
             binding.contactNotes.setBackgroundColor(surfaceColor)
         }
 
+        // Websites
         if (contact!!.websites.isEmpty()) {
             binding.contactWebsitesHolder.removeAllViews()
 
@@ -1222,6 +1293,7 @@ class EditContactActivity : ContactActivity() {
             binding.contactWebsitesAddNewHolder.setBackgroundColor(surfaceColor)
         }
 
+        // Groups
         if (contact!!.groups.isEmpty()) {
             val groupsHolder = ItemEditGroupBinding.bind(binding.contactGroupsHolder.getChildAt(0))
             groupsHolder.apply {
@@ -1332,68 +1404,93 @@ class EditContactActivity : ContactActivity() {
     }
 
     private fun showRelationTypePicker(relationTypeField: TextView) {
+//        val items = arrayListOf(
+//            RadioItem(Relation.TYPE_FRIEND, getString(com.goodwy.strings.R.string.relation_friend_g)), // 6
+//            RadioItem(Relation.TYPE_SPOUSE, getString(com.goodwy.strings.R.string.relation_spouse_g)), // 14
+//            RadioItem(ContactRelation.TYPE_HUSBAND, getString(com.goodwy.strings.R.string.relation_husband_g)), // 103
+//            RadioItem(ContactRelation.TYPE_WIFE, getString(com.goodwy.strings.R.string.relation_wife_g)), // 104
+//            RadioItem(Relation.TYPE_DOMESTIC_PARTNER, getString(com.goodwy.strings.R.string.relation_domestic_partner_g)), // 4
+//            RadioItem(Relation.TYPE_PARTNER, getString(com.goodwy.strings.R.string.relation_partner_g)), // 10
+//            RadioItem(ContactRelation.TYPE_CO_RESIDENT, getString(com.goodwy.strings.R.string.relation_co_resident_g)), // 56
+//            RadioItem(ContactRelation.TYPE_NEIGHBOR, getString(com.goodwy.strings.R.string.relation_neighbor_g)), // 57
+//            RadioItem(Relation.TYPE_PARENT, getString(com.goodwy.strings.R.string.relation_parent_g)), // 9
+//            RadioItem(Relation.TYPE_FATHER, getString(com.goodwy.strings.R.string.relation_father_g)), // 5
+//            RadioItem(Relation.TYPE_MOTHER, getString(com.goodwy.strings.R.string.relation_mother_g)), // 8
+//            RadioItem(Relation.TYPE_CHILD, getString(com.goodwy.strings.R.string.relation_child_g)), // 3
+//            RadioItem(ContactRelation.TYPE_SON, getString(com.goodwy.strings.R.string.relation_son_g)), // 105
+//            RadioItem(ContactRelation.TYPE_DAUGHTER, getString(com.goodwy.strings.R.string.relation_daughter_g)), // 106
+//            RadioItem(ContactRelation.TYPE_SIBLING, getString(com.goodwy.strings.R.string.relation_sibling_g)), // 58
+//            RadioItem(Relation.TYPE_BROTHER, getString(com.goodwy.strings.R.string.relation_brother_g)), // 2
+//            RadioItem(Relation.TYPE_SISTER, getString(com.goodwy.strings.R.string.relation_sister_g)), // 13
+//            RadioItem(ContactRelation.TYPE_GRANDPARENT, getString(com.goodwy.strings.R.string.relation_grandparent_g)), // 107
+//            RadioItem(ContactRelation.TYPE_GRANDFATHER, getString(com.goodwy.strings.R.string.relation_grandfather_g)), // 108
+//            RadioItem(ContactRelation.TYPE_GRANDMOTHER, getString(com.goodwy.strings.R.string.relation_grandmother_g)), // 109
+//            RadioItem(ContactRelation.TYPE_GRANDCHILD, getString(com.goodwy.strings.R.string.relation_grandchild_g)), // 110
+//            RadioItem(ContactRelation.TYPE_GRANDSON, getString(com.goodwy.strings.R.string.relation_grandson_g)), // 111
+//            RadioItem(ContactRelation.TYPE_GRANDDAUGHTER, getString(com.goodwy.strings.R.string.relation_granddaughter_g)), // 112
+//            RadioItem(ContactRelation.TYPE_UNCLE, getString(com.goodwy.strings.R.string.relation_uncle_g)), // 113
+//            RadioItem(ContactRelation.TYPE_AUNT, getString(com.goodwy.strings.R.string.relation_aunt_g)), // 114
+//            RadioItem(ContactRelation.TYPE_NEPHEW, getString(com.goodwy.strings.R.string.relation_nephew_g)), // 115
+//            RadioItem(ContactRelation.TYPE_NIECE, getString(com.goodwy.strings.R.string.relation_niece_g)), // 116
+//            RadioItem(ContactRelation.TYPE_FATHER_IN_LAW, getString(com.goodwy.strings.R.string.relation_father_in_law_g)), // 117
+//            RadioItem(ContactRelation.TYPE_MOTHER_IN_LAW, getString(com.goodwy.strings.R.string.relation_mother_in_law_g)), // 118
+//            RadioItem(ContactRelation.TYPE_SON_IN_LAW, getString(com.goodwy.strings.R.string.relation_son_in_law_g)), // 119
+//            RadioItem(ContactRelation.TYPE_DAUGHTER_IN_LAW, getString(com.goodwy.strings.R.string.relation_daughter_in_law_g)), // 120
+//            RadioItem(ContactRelation.TYPE_BROTHER_IN_LAW, getString(com.goodwy.strings.R.string.relation_brother_in_law_g)), // 121
+//            RadioItem(ContactRelation.TYPE_SISTER_IN_LAW, getString(com.goodwy.strings.R.string.relation_sister_in_law_g)), // 122
+//            RadioItem(Relation.TYPE_RELATIVE, getString(com.goodwy.strings.R.string.relation_relative_g)), // 12
+//            RadioItem(ContactRelation.TYPE_KIN, getString(com.goodwy.strings.R.string.relation_kin_g)), // 59
+//
+//            RadioItem(ContactRelation.TYPE_MUSE, getString(com.goodwy.strings.R.string.relation_muse_g)), // 60
+//            RadioItem(ContactRelation.TYPE_CRUSH, getString(com.goodwy.strings.R.string.relation_crush_g)), // 61
+//            RadioItem(ContactRelation.TYPE_DATE, getString(com.goodwy.strings.R.string.relation_date_g)), // 62
+//            RadioItem(ContactRelation.TYPE_SWEETHEART, getString(com.goodwy.strings.R.string.relation_sweetheart_g)), // 63
+//
+//            RadioItem(ContactRelation.TYPE_CONTACT, getString(com.goodwy.strings.R.string.relation_contact_g)), // 51
+//            RadioItem(ContactRelation.TYPE_ACQUAINTANCE, getString(com.goodwy.strings.R.string.relation_acquaintance_g)), // 52
+//            RadioItem(ContactRelation.TYPE_MET, getString(com.goodwy.strings.R.string.relation_met_g)), // 53
+//            RadioItem(Relation.TYPE_REFERRED_BY, getString(com.goodwy.strings.R.string.relation_referred_by_g)), // 11
+//            RadioItem(ContactRelation.TYPE_AGENT, getString(com.goodwy.strings.R.string.relation_agent_g)), // 64
+//
+//            RadioItem(ContactRelation.TYPE_COLLEAGUE, getString(com.goodwy.strings.R.string.relation_colleague_g)), // 55
+//            RadioItem(ContactRelation.TYPE_CO_WORKER, getString(com.goodwy.strings.R.string.relation_co_worker_g)), // 54
+//            RadioItem(ContactRelation.TYPE_SUPERIOR, getString(com.goodwy.strings.R.string.relation_superior_g)), // 101
+//            RadioItem(ContactRelation.TYPE_SUBORDINATE, getString(com.goodwy.strings.R.string.relation_subordinate_g)), // 102
+//            RadioItem(Relation.TYPE_MANAGER, getString(com.goodwy.strings.R.string.relation_manager_g)), // 7
+//            RadioItem(Relation.TYPE_ASSISTANT, getString(com.goodwy.strings.R.string.relation_assistant_g)), // 1
+//
+//            RadioItem(ContactRelation.TYPE_ME, getString(com.goodwy.strings.R.string.relation_me_g)), // 66
+//            RadioItem(ContactRelation.TYPE_EMERGENCY, getString(com.goodwy.strings.R.string.relation_emergency_g)), // 65
+//            RadioItem(Relation.TYPE_CUSTOM, getString(com.goodwy.commons.R.string.custom)),
+//        )
         val items = arrayListOf(
+            // Relation types defined in vCard 4.0
+            RadioItem(ContactRelation.TYPE_CONTACT, getString(com.goodwy.strings.R.string.relation_contact_g)), // 51
+            RadioItem(ContactRelation.TYPE_ACQUAINTANCE, getString(com.goodwy.strings.R.string.relation_acquaintance_g)), // 52
             RadioItem(Relation.TYPE_FRIEND, getString(com.goodwy.strings.R.string.relation_friend_g)), // 6
-            RadioItem(Relation.TYPE_SPOUSE, getString(com.goodwy.strings.R.string.relation_spouse_g)), // 14
-            RadioItem(ContactRelation.TYPE_HUSBAND, getString(com.goodwy.strings.R.string.relation_husband_g)), // 103
-            RadioItem(ContactRelation.TYPE_WIFE, getString(com.goodwy.strings.R.string.relation_wife_g)), // 104
-            RadioItem(Relation.TYPE_DOMESTIC_PARTNER, getString(com.goodwy.strings.R.string.relation_domestic_partner_g)), // 4
-            RadioItem(Relation.TYPE_PARTNER, getString(com.goodwy.strings.R.string.relation_partner_g)), // 10
+            RadioItem(ContactRelation.TYPE_MET, getString(com.goodwy.strings.R.string.relation_met_g)), // 53
+            //RadioItem(ContactRelation.TYPE_CO_WORKER, getString(com.goodwy.strings.R.string.relation_co_worker_g)), // 54
+            RadioItem(ContactRelation.TYPE_COLLEAGUE, getString(com.goodwy.strings.R.string.relation_colleague_g)), // 55
             RadioItem(ContactRelation.TYPE_CO_RESIDENT, getString(com.goodwy.strings.R.string.relation_co_resident_g)), // 56
             RadioItem(ContactRelation.TYPE_NEIGHBOR, getString(com.goodwy.strings.R.string.relation_neighbor_g)), // 57
-            RadioItem(Relation.TYPE_PARENT, getString(com.goodwy.strings.R.string.relation_parent_g)), // 9
-            RadioItem(Relation.TYPE_FATHER, getString(com.goodwy.strings.R.string.relation_father_g)), // 5
-            RadioItem(Relation.TYPE_MOTHER, getString(com.goodwy.strings.R.string.relation_mother_g)), // 8
             RadioItem(Relation.TYPE_CHILD, getString(com.goodwy.strings.R.string.relation_child_g)), // 3
-            RadioItem(ContactRelation.TYPE_SON, getString(com.goodwy.strings.R.string.relation_son_g)), // 105
-            RadioItem(ContactRelation.TYPE_DAUGHTER, getString(com.goodwy.strings.R.string.relation_daughter_g)), // 106
+            RadioItem(Relation.TYPE_PARENT, getString(com.goodwy.strings.R.string.relation_parent_g)), // 9
             RadioItem(ContactRelation.TYPE_SIBLING, getString(com.goodwy.strings.R.string.relation_sibling_g)), // 58
-            RadioItem(Relation.TYPE_BROTHER, getString(com.goodwy.strings.R.string.relation_brother_g)), // 2
-            RadioItem(Relation.TYPE_SISTER, getString(com.goodwy.strings.R.string.relation_sister_g)), // 13
-            RadioItem(ContactRelation.TYPE_GRANDPARENT, getString(com.goodwy.strings.R.string.relation_grandparent_g)), // 107
-            RadioItem(ContactRelation.TYPE_GRANDFATHER, getString(com.goodwy.strings.R.string.relation_grandfather_g)), // 108
-            RadioItem(ContactRelation.TYPE_GRANDMOTHER, getString(com.goodwy.strings.R.string.relation_grandmother_g)), // 109
-            RadioItem(ContactRelation.TYPE_GRANDCHILD, getString(com.goodwy.strings.R.string.relation_grandchild_g)), // 110
-            RadioItem(ContactRelation.TYPE_GRANDSON, getString(com.goodwy.strings.R.string.relation_grandson_g)), // 111
-            RadioItem(ContactRelation.TYPE_GRANDDAUGHTER, getString(com.goodwy.strings.R.string.relation_granddaughter_g)), // 112
-            RadioItem(ContactRelation.TYPE_UNCLE, getString(com.goodwy.strings.R.string.relation_uncle_g)), // 113
-            RadioItem(ContactRelation.TYPE_AUNT, getString(com.goodwy.strings.R.string.relation_aunt_g)), // 114
-            RadioItem(ContactRelation.TYPE_NEPHEW, getString(com.goodwy.strings.R.string.relation_nephew_g)), // 115
-            RadioItem(ContactRelation.TYPE_NIECE, getString(com.goodwy.strings.R.string.relation_niece_g)), // 116
-            RadioItem(ContactRelation.TYPE_FATHER_IN_LAW, getString(com.goodwy.strings.R.string.relation_father_in_law_g)), // 117
-            RadioItem(ContactRelation.TYPE_MOTHER_IN_LAW, getString(com.goodwy.strings.R.string.relation_mother_in_law_g)), // 118
-            RadioItem(ContactRelation.TYPE_SON_IN_LAW, getString(com.goodwy.strings.R.string.relation_son_in_law_g)), // 119
-            RadioItem(ContactRelation.TYPE_DAUGHTER_IN_LAW, getString(com.goodwy.strings.R.string.relation_daughter_in_law_g)), // 120
-            RadioItem(ContactRelation.TYPE_BROTHER_IN_LAW, getString(com.goodwy.strings.R.string.relation_brother_in_law_g)), // 121
-            RadioItem(ContactRelation.TYPE_SISTER_IN_LAW, getString(com.goodwy.strings.R.string.relation_sister_in_law_g)), // 122
-            RadioItem(Relation.TYPE_RELATIVE, getString(com.goodwy.strings.R.string.relation_relative_g)), // 12
+            RadioItem(Relation.TYPE_SPOUSE, getString(com.goodwy.strings.R.string.relation_spouse_g)), // 14
             RadioItem(ContactRelation.TYPE_KIN, getString(com.goodwy.strings.R.string.relation_kin_g)), // 59
-
             RadioItem(ContactRelation.TYPE_MUSE, getString(com.goodwy.strings.R.string.relation_muse_g)), // 60
             RadioItem(ContactRelation.TYPE_CRUSH, getString(com.goodwy.strings.R.string.relation_crush_g)), // 61
             RadioItem(ContactRelation.TYPE_DATE, getString(com.goodwy.strings.R.string.relation_date_g)), // 62
             RadioItem(ContactRelation.TYPE_SWEETHEART, getString(com.goodwy.strings.R.string.relation_sweetheart_g)), // 63
-
-            RadioItem(ContactRelation.TYPE_CONTACT, getString(com.goodwy.strings.R.string.relation_contact_g)), // 51
-            RadioItem(ContactRelation.TYPE_ACQUAINTANCE, getString(com.goodwy.strings.R.string.relation_acquaintance_g)), // 52
-            RadioItem(ContactRelation.TYPE_MET, getString(com.goodwy.strings.R.string.relation_met_g)), // 53
-            RadioItem(Relation.TYPE_REFERRED_BY, getString(com.goodwy.strings.R.string.relation_referred_by_g)), // 11
-            RadioItem(ContactRelation.TYPE_AGENT, getString(com.goodwy.strings.R.string.relation_agent_g)), // 64
-
-            RadioItem(ContactRelation.TYPE_COLLEAGUE, getString(com.goodwy.strings.R.string.relation_colleague_g)), // 55
-            RadioItem(ContactRelation.TYPE_CO_WORKER, getString(com.goodwy.strings.R.string.relation_co_worker_g)), // 54
-            RadioItem(ContactRelation.TYPE_SUPERIOR, getString(com.goodwy.strings.R.string.relation_superior_g)), // 101
-            RadioItem(ContactRelation.TYPE_SUBORDINATE, getString(com.goodwy.strings.R.string.relation_subordinate_g)), // 102
-            RadioItem(Relation.TYPE_MANAGER, getString(com.goodwy.strings.R.string.relation_manager_g)), // 7
-            RadioItem(Relation.TYPE_ASSISTANT, getString(com.goodwy.strings.R.string.relation_assistant_g)), // 1
-
             RadioItem(ContactRelation.TYPE_ME, getString(com.goodwy.strings.R.string.relation_me_g)), // 66
+            RadioItem(ContactRelation.TYPE_AGENT, getString(com.goodwy.strings.R.string.relation_agent_g)), // 64
             RadioItem(ContactRelation.TYPE_EMERGENCY, getString(com.goodwy.strings.R.string.relation_emergency_g)), // 65
             RadioItem(Relation.TYPE_CUSTOM, getString(com.goodwy.commons.R.string.custom)),
         )
+
         val currentRelationTypeId = getRelationTypeId(relationTypeField.value)
         RadioGroupDialog(this, items, currentRelationTypeId, showOKButton = true) {
-            if (it as Int == CommonDataKinds.Relation.TYPE_CUSTOM) {
+            if (it as Int == Relation.TYPE_CUSTOM) {
                 CustomLabelDialog(this) {
                     relationTypeField.text = it
                 }
@@ -1933,6 +2030,7 @@ class EditContactActivity : ContactActivity() {
                 setOnClickListener {
                     binding.contactNumbersHolder.removeView(numberHolder.root)
                     hideKeyboard()
+                    initNumberHolders()
                 }
             }
         }
@@ -2239,7 +2337,7 @@ class EditContactActivity : ContactActivity() {
 
             try {
                 startActivityForResult(this, INTENT_CHOOSE_PHOTO)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 toast(com.goodwy.commons.R.string.no_app_found)
             } catch (e: Exception) {
                 showErrorToast(e)
@@ -2255,7 +2353,11 @@ class EditContactActivity : ContactActivity() {
     override fun systemRingtoneSelected(uri: Uri?) {
         contact!!.ringtone = uri?.toString() ?: ""
         val contactRingtone = RingtoneManager.getRingtone(this, uri)
-        binding.contactRingtone.text = contactRingtone.getTitle(this) ?: "?"
+        binding.contactRingtone.text = try {
+            contactRingtone.getTitle(this)
+        } catch (_: Exception) {
+            "?"
+        }
     }
 
     private fun getPhoneNumberTypeId(value: String) = when (value) {

@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">เสียงเรียกเข้าไม่สามารถใช้ได้สําหรับการติดต่อส่วนตัว</string>
-    <string name="show_private_contacts_g">แสดงรายชื่อติดต่อส่วนตัวใน Right Dialer และ Right Messages</string>
+    <string name="show_private_contacts_g">แสดงรายชื่อผู้ติดต่อส่วนตัวในแอปโทรศัพท์ แอปข้อความ และแอปปฏิทินทางด้านขวา</string>
+    <string name="show_private_contacts_n">แสดงรายชื่อผู้ติดต่อส่วนตัวในแอป AlRight Phone, Messages และ Calendar</string>
+    <string name="on_favorite_click">เมื่อคุณคลิกเลือกรายการโปรด</string>
 
 </resources>

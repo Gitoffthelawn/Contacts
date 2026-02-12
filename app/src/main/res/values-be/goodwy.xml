@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Рынгтон недаступны для прыватнага кантакту</string>
-    <string name="show_private_contacts_g">Паказваць прыватныя кантакты Right Dialer і Right Messages</string>
+    <string name="show_private_contacts_g">Паказваць асабістыя кантакты ў дадатках Right Phone, Messages і Calendar</string>
+    <string name="show_private_contacts_n">Паказваць асабістыя кантакты ў дадатках AlRight Phone, Messages і Calendar</string>
+    <string name="on_favorite_click">Пры націску на абраны</string>
 
 </resources>

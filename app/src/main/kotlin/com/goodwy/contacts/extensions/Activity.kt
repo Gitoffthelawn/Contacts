@@ -26,6 +26,11 @@ import com.goodwy.contacts.dialogs.ImportContactsDialog
 import com.goodwy.contacts.helpers.DEFAULT_FILE_NAME
 import com.goodwy.contacts.helpers.VcfExporter
 import androidx.core.net.toUri
+import com.goodwy.contacts.helpers.ON_CLICK_CALL_CONTACT
+import com.goodwy.contacts.helpers.ON_CLICK_EDIT_CONTACT
+import com.goodwy.contacts.helpers.ON_CLICK_MESSAGE_CONTACT
+import com.goodwy.contacts.helpers.ON_CLICK_VIEW_CONTACT
+import kotlin.ranges.random
 
 fun SimpleActivity.startCallIntent(recipient: String) {
     handlePermission(PERMISSION_CALL_PHONE) {
@@ -39,15 +44,46 @@ fun SimpleActivity.startCallIntent(recipient: String) {
 }
 
 fun SimpleActivity.tryStartCallRecommendation(contact: Contact) {
+    val isNewApp = isNewApp()
     val simpleDialer = "com.goodwy.dialer"
     val simpleDialerDebug = "com.goodwy.dialer.debug"
-    if ((0..config.appRecommendationDialogCount).random() == 2 && (!isPackageInstalled(simpleDialer) && !isPackageInstalled(simpleDialerDebug))) {
-        NewAppDialog(this, simpleDialer, getString(com.goodwy.strings.R.string.recommendation_dialog_dialer_g), getString(com.goodwy.commons.R.string.right_dialer),
-            AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_dialer)) {
+    val newSimpleDialer = "dev.goodwy.phone"
+    val newSimpleDialerDebug = "dev.goodwy.phone.debug"
+    if ((0..config.appRecommendationDialogCount).random() == 2 &&
+        (!isPackageInstalled(simpleDialer) && !isPackageInstalled(simpleDialerDebug) &&
+            !isPackageInstalled(newSimpleDialer) && !isPackageInstalled(newSimpleDialerDebug))
+    ) {
+        NewAppDialog(
+            activity = this,
+            packageName = if (isNewApp) newSimpleDialer else simpleDialer,
+            title =getString(com.goodwy.strings.R.string.recommendation_dialog_dialer_g),
+            text = if (isNewApp) "AlRight Phone" else getString(com.goodwy.commons.R.string.right_dialer),
+            drawable = AppCompatResources.getDrawable(
+                this,
+                if (isNewApp) com.goodwy.commons.R.drawable.ic_dialer_new else com.goodwy.commons.R.drawable.ic_dialer
+            )
+        ) {
             callContact(contact)
         }
     } else {
         callContact(contact)
+    }
+}
+
+fun Activity.newAppRecommendation() {
+    if (!isNewApp()) {
+        if ((0..config.newAppRecommendationDialogCount).random() == 2) {
+            val packageName = "stcatnoc.ywdoog.ved".reversed()
+            NewAppDialog(
+                activity = this,
+                packageName = packageName,
+                title = getString(com.goodwy.strings.R.string.notification_of_new_application),
+                text = "AlRight Contacts",
+                drawable = AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_contacts_new),
+                showSubtitle = true
+            ) {
+            }
+        }
     }
 }
 
@@ -102,11 +138,14 @@ fun BaseSimpleActivity.shareContacts(contacts: ArrayList<Contact>) {
     }
 }
 
-fun SimpleActivity.handleGenericContactClick(contact: Contact) {
-    when (config.onContactClick) {
+fun SimpleActivity.handleGenericContactClick(contact: Contact, isFavorite: Boolean = false) {
+    val configClick = if (isFavorite) config.onFavoriteClick else config.onContactClick
+    when (configClick) {
         ON_CLICK_CALL_CONTACT -> callContact(contact)
+        ON_CLICK_MESSAGE_CONTACT -> sendSMSContact(contact)
         ON_CLICK_VIEW_CONTACT -> viewContact(contact)
         ON_CLICK_EDIT_CONTACT -> editContact(contact, config.mergeDuplicateContacts)
+        else -> {}
     }
 }
 
@@ -114,6 +153,15 @@ fun SimpleActivity.callContact(contact: Contact) {
     hideKeyboard()
     if (contact.phoneNumbers.isNotEmpty()) {
         tryInitiateCall(contact) { startCallIntent(it) }
+    } else {
+        toast(com.goodwy.commons.R.string.no_phone_number_found)
+    }
+}
+
+fun Activity.sendSMSContact(contact: Contact) {
+    hideKeyboard()
+    if (contact.phoneNumbers.isNotEmpty()) {
+        initiateCall(contact) { launchSendSMSIntent(it) }
     } else {
         toast(com.goodwy.commons.R.string.no_phone_number_found)
     }
@@ -236,10 +284,21 @@ fun SimpleActivity.launchAbout() {
     val subscriptionYearIdX2 = BuildConfig.SUBSCRIPTION_YEAR_ID_X2
     val subscriptionYearIdX3 = BuildConfig.SUBSCRIPTION_YEAR_ID_X3
 
+    val flavorName = BuildConfig.FLAVOR
+    val storeDisplayName = when (flavorName) {
+        "gplay" -> "Google Play"
+        "foss" -> "FOSS"
+        "rustore" -> "RuStore"
+        else -> ""
+    }
+    val versionName = BuildConfig.VERSION_NAME
+    val fullVersionText = "$versionName ($storeDisplayName)"
+
     startAboutActivity(
         appNameId = R.string.app_name_g,
         licenseMask = licenses,
-        versionName = BuildConfig.VERSION_NAME,
+        versionName = fullVersionText,
+        flavorName = BuildConfig.FLAVOR,
         faqItems = faqItems,
         showFAQBeforeMail = true,
         productIdList = arrayListOf(productIdX1, productIdX2, productIdX3),
@@ -248,8 +307,6 @@ fun SimpleActivity.launchAbout() {
         subscriptionIdListRu = arrayListOf(subscriptionIdX1, subscriptionIdX2, subscriptionIdX3),
         subscriptionYearIdList = arrayListOf(subscriptionYearIdX1, subscriptionYearIdX2, subscriptionYearIdX3),
         subscriptionYearIdListRu = arrayListOf(subscriptionYearIdX1, subscriptionYearIdX2, subscriptionYearIdX3),
-        playStoreInstalled = isPlayStoreInstalled(),
-        ruStoreInstalled = isRuStoreInstalled()
     )
 }
 

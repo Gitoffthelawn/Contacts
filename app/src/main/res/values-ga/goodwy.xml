@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Níl an ringtone ar fáil le haghaidh teagmhála príobháideach</string>
-    <string name="show_private_contacts_g">Taispeáin teagmhálacha príobháideacha don Dialer Ceart agus do Theachtaireachtaí Ceart</string>
+    <string name="show_private_contacts_g">Taispeáin teagmhálacha pearsanta sna haipeanna Teileafóin, Teachtaireachtaí agus Féilire ar dheis</string>
+    <string name="show_private_contacts_n">Taispeáin teagmhálacha pearsanta sna haipeanna AlRight Phone, Messages, agus Calendar</string>
+    <string name="on_favorite_click">Nuair a chliceálann tú ar rogha pearsanta</string>
 </resources>

@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Nhạc chuông không có sẵn để liên hệ riêng tư</string>
-    <string name="show_private_contacts_g">Hiển thị danh bạ riêng tư cho Right Dialer và Right Messages</string>
+    <string name="show_private_contacts_g">Hiển thị danh bạ cá nhân trong các ứng dụng Right Phone, Messages và Calendar.</string>
+    <string name="show_private_contacts_n">Hiển thị danh bạ cá nhân trong các ứng dụng Điện thoại, Tin nhắn và Lịch của AlRight.</string>
+    <string name="on_favorite_click">Khi bạn nhấp vào mục yêu thích</string>
 </resources>

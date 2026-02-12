@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">ব্যক্তিগত যোগাযোগের জন্য রিংটোন উপলব্ধ নয়</string>
-    <string name="show_private_contacts_g">ডান ডায়ালার এবং ডান বার্তাগুলিতে ব্যক্তিগত পরিচিতিগুলি দেখান</string>
+    <string name="show_private_contacts_g">সঠিক ফোন, বার্তা এবং ক্যালেন্ডার অ্যাপে ব্যক্তিগত পরিচিতিগুলি দেখান</string>
+    <string name="show_private_contacts_n">AlRight ফোন, বার্তা এবং ক্যালেন্ডার অ্যাপগুলিতে ব্যক্তিগত পরিচিতিগুলি দেখান</string>
+    <string name="on_favorite_click">যখন আপনি একটি পছন্দের উপর ক্লিক করেন</string>
 </resources>

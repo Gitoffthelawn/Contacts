@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Мелодията на звънене не е налична за личен контакт</string>
-    <string name="show_private_contacts_g">Показване на лични контакти на Right Dialer и Right Messages</string>
+    <string name="show_private_contacts_g">Показване на лични контакти в правилните приложения за телефон, съобщения и календар</string>
+    <string name="show_private_contacts_n">Показване на лични контакти в приложенията AlRight Phone, Messages и Calendar</string>
+    <string name="on_favorite_click">Когато кликнете върху любим</string>
 
 </resources>

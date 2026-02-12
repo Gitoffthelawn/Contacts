@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Ο ήχος κλήσης δεν είναι διαθέσιμος για ιδιωτική επαφή</string>
-    <string name="show_private_contacts_g">Εμφάνιση ιδιωτικών επαφών στο δεξιό κλητικό και στα δεξιά μηνύματα</string>
+    <string name="show_private_contacts_g">Εμφάνιση προσωπικών επαφών στις εφαρμογές \"Δεξιά τηλέφωνο\", \"Μηνύματα\" και \"Ημερολόγιο\"</string>
+    <string name="show_private_contacts_n">Εμφάνιση προσωπικών επαφών στις εφαρμογές AlRight Phone, Messages και Calendar</string>
+    <string name="on_favorite_click">Όταν κάνετε κλικ σε ένα αγαπημένο</string>
 
 </resources>

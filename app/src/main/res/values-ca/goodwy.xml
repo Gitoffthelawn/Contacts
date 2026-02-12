@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">El to de trucada no està disponible per al contacte privat</string>
-    <string name="show_private_contacts_g">Mostra els contactes privats a Right Dialer i Right Messages</string>
+    <string name="show_private_contacts_g">Mostra els contactes personals a les aplicacions Telèfon correcte, Missatges i Calendari</string>
+    <string name="show_private_contacts_n">Mostra els contactes personals a les aplicacions AlRight Phone, Messages i Calendar</string>
+    <string name="on_favorite_click">Quan feu clic a un preferit</string>
 
 </resources>

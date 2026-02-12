@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">نغمة الرنين غير متوفرة للاتصال الخاص</string>
-    <string name="show_private_contacts_g">إظهار جهات الاتصال الخاصة في Right Dialer وRight Messages</string>
+    <string name="show_private_contacts_g">عرض جهات الاتصال الشخصية في تطبيقات الهاتف والرسائل والتقويم المناسبة</string>
+    <string name="show_private_contacts_n">اعرض جهات الاتصال الشخصية في تطبيقات الهاتف والرسائل والتقويم من AlRight</string>
+    <string name="on_favorite_click">عند النقر على المفضلة</string>
 
 </resources>

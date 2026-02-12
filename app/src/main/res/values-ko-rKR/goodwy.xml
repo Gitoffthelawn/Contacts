@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">벨소리는 개인 연락처에 사용할 수 없습니다.</string>
-    <string name="show_private_contacts_g">Right Dialer 및 Right Messages에 개인 연락처 표시</string>
+    <string name="show_private_contacts_g">오른쪽 전화, 메시지 및 캘린더 앱에 개인 연락처를 표시합니다.</string>
+    <string name="show_private_contacts_n">AlRight 전화, 메시지 및 캘린더 앱에 개인 연락처를 표시합니다.</string>
+    <string name="on_favorite_click">즐겨찾기를 클릭하면</string>
 
 </resources>

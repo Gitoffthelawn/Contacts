@@ -5,6 +5,7 @@ import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.ACTION_SEND
 import android.content.pm.ShortcutInfo
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -16,27 +17,21 @@ import android.speech.RecognizerIntent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
-import androidx.core.view.ScrollingView
-import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
-import com.behaviorule.arturdumchev.library.pixels
 import com.goodwy.commons.databases.ContactsDatabase
 import com.goodwy.commons.databinding.BottomTablayoutItemBinding
+import com.goodwy.commons.dialogs.ConfirmationDialog
 import com.goodwy.commons.dialogs.NewAppDialog
 import com.goodwy.commons.dialogs.RadioGroupDialog
 import com.goodwy.commons.extensions.*
 import com.goodwy.commons.helpers.*
 import com.goodwy.commons.models.RadioItem
-import com.goodwy.commons.models.Release
 import com.goodwy.commons.models.contacts.Contact
-import com.goodwy.commons.views.MySearchMenu
 import com.goodwy.contacts.BuildConfig
 import com.goodwy.contacts.R
 import com.goodwy.contacts.adapters.ViewPagerAdapter
@@ -46,6 +41,7 @@ import com.goodwy.contacts.dialogs.FilterContactSourcesDialog
 import com.goodwy.contacts.extensions.config
 import com.goodwy.contacts.extensions.handleGenericContactClick
 import com.goodwy.contacts.extensions.launchAbout
+import com.goodwy.contacts.extensions.newAppRecommendation
 import com.goodwy.contacts.extensions.tryImportContactsFromFile
 import com.goodwy.contacts.fragments.ContactsFragment
 import com.goodwy.contacts.fragments.FavoritesFragment
@@ -53,6 +49,7 @@ import com.goodwy.contacts.fragments.GroupsFragment
 import com.goodwy.contacts.fragments.MyViewPagerFragment
 import com.goodwy.contacts.helpers.ALL_TABS_MASK
 import com.goodwy.contacts.helpers.tabsList
+import com.goodwy.contacts.helpers.whatsNewList
 import com.goodwy.contacts.interfaces.RefreshContactsListener
 import me.grantland.widget.AutofitHelper
 import java.util.*
@@ -74,40 +71,34 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
     private var storedBackgroundColor = 0
     private var currentOldScrollY = 0
     private var isSpeechToTextAvailable = false
+
+    override var isSearchBarEnabled = true
+
     private val binding by viewBinding(ActivityMainBinding::inflate)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        isMaterialActivity = true
-        updateNavigationBarColor = false
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         appLaunched(BuildConfig.APPLICATION_ID)
         setupOptionsMenu()
         refreshMenuItems()
+
         val useBottomNavigationBar = config.bottomNavigationBar
-        updateMaterialActivityViews(
-            binding.mainCoordinator,
-            binding.mainHolder,
-            useTransparentNavigation = false,
-            useTopSearchMenu = useBottomNavigationBar
+        val oneTabs: Boolean = getAllFragments().size == 1 || !useBottomNavigationBar
+        setupEdgeToEdge(
+            padBottomImeAndSystem = listOf(binding.mainTabsHolder),
+            moveBottomSystem = if (oneTabs) listOf(binding.mainAddButton) else emptyList()
         )
+
+        binding.mainMenu.apply {
+            updateTitle(getAppLauncherName())
+            searchBeVisibleIf(useBottomNavigationBar && config.showSearchBar)
+        }
+
         storeStateVariables()
         checkContactPermissions()
         setupTabs()
         checkWhatsNewDialog()
-
-        // TODO TRANSPARENT Navigation Bar
-        if (!useBottomNavigationBar) {
-            setWindowTransparency(true) { _, bottomNavigationBarSize, leftNavigationBarSize, rightNavigationBarSize ->
-                binding.mainCoordinator.setPadding(leftNavigationBarSize, 0, rightNavigationBarSize, 0)
-                binding.mainAddButton.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    setMargins(0, 0, 0, bottomNavigationBarSize + pixels(com.goodwy.commons.R.dimen.activity_margin).toInt())
-                }
-            }
-        }
-
-        binding.mainMenu.updateTitle(getString(R.string.app_launcher_name))
-        binding.mainMenu.searchBeVisibleIf(useBottomNavigationBar)
     }
 
     private fun checkContactPermissions() {
@@ -198,6 +189,9 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
         }
         binding.viewPager.setPageTransformer(true, animation)
         binding.viewPager.setPagingEnabled(!config.useSwipeToAction)
+
+        checkErrorDialog()
+        newAppRecommendation()
     }
 
     override fun onPause() {
@@ -214,13 +208,15 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
         config.needRestart = false
     }
 
-    override fun onBackPressed() {
-        if (binding.mainMenu.isSearchOpen) {
+    override fun onBackPressedCompat(): Boolean {
+        return if (binding.mainMenu.isSearchOpen) {
             binding.mainMenu.closeSearch()
+            true
         } else if (isSearchOpen && mSearchMenuItem != null) {
             mSearchMenuItem!!.collapseActionView()
+            true
         } else {
-            super.onBackPressed()
+            false
         }
     }
 
@@ -241,7 +237,7 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
 
     private fun refreshMenuItems() {
         val currentFragment = getCurrentFragment()
-        binding.mainMenu.getToolbar().menu.apply {
+        binding.mainMenu.requireToolbar().menu.apply {
             findItem(R.id.search).isVisible = !config.bottomNavigationBar
             findItem(R.id.sort).isVisible = currentFragment != findViewById(R.id.groups_fragment)
             findItem(R.id.filter).isVisible = currentFragment != findViewById(R.id.groups_fragment)
@@ -252,8 +248,8 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
     }
 
     private fun setupOptionsMenu() {
-        binding.mainMenu.getToolbar().inflateMenu(R.menu.menu)
-        binding.mainMenu.toggleHideOnScroll(false)
+        binding.mainMenu.requireToolbar().inflateMenu(R.menu.menu)
+//        binding.mainMenu.toggleHideOnScroll(false)
 
         if (config.bottomNavigationBar) {
             if (baseConfig.useSpeechToText) {
@@ -277,9 +273,9 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
                 getCurrentFragment()?.onSearchQueryChanged(text)
                 binding.mainMenu.clearSearch()
             }
-        } else setupSearch(binding.mainMenu.getToolbar().menu)
+        } else setupSearch(binding.mainMenu.requireToolbar().menu)
 
-        binding.mainMenu.getToolbar().setOnMenuItemClickListener { menuItem ->
+        binding.mainMenu.requireToolbar().setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.sort -> showSortingDialog(showCustomSorting = getCurrentFragment() is FavoritesFragment)
                 R.id.filter -> showFilterDialog()
@@ -403,7 +399,7 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
     @SuppressLint("NewApi")
     private fun checkShortcuts() {
         val iconColor = getProperPrimaryColor()
-        if (isNougatMR1Plus() && config.lastHandledShortcutColor != iconColor) {
+        if (config.lastHandledShortcutColor != iconColor) {
             val createNewContact = getCreateNewContactShortcut(iconColor)
 
             try {
@@ -467,16 +463,6 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
                 if (isDynamicTheme() && !isSystemInDarkMode()) getColoredMaterialStatusBarColor()
                 else getSurfaceColor()
             binding.mainTabsHolder.setBackgroundColor(bottomBarColor)
-            if (binding.mainTabsHolder.tabCount != 1) updateNavigationBarColor(bottomBarColor)
-            else {
-                // TODO TRANSPARENT Navigation Bar
-                setWindowTransparency(true) { _, bottomNavigationBarSize, leftNavigationBarSize, rightNavigationBarSize ->
-                    binding.mainCoordinator.setPadding(leftNavigationBarSize, 0, rightNavigationBarSize, 0)
-                    binding.mainAddButton.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        setMargins(0, 0, 0, bottomNavigationBarSize + pixels(com.goodwy.commons.R.dimen.activity_margin).toInt())
-                    }
-                }
-            }
 
             val properTextColor = getProperTextColor()
             val properPrimaryColor = getProperPrimaryColor()
@@ -697,42 +683,11 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
         val statusBarColor = if (config.changeColourTopBar) getRequiredStatusBarColor(useSurfaceColor) else backgroundColor
 
         binding.mainMenu.updateColors(statusBarColor, scrollingViewOffset)
-        setupSearchMenuScrollListenerNew(myRecyclerView, binding.mainMenu, useSurfaceColor)
-    }
-
-    private fun setupSearchMenuScrollListenerNew(scrollingView: ScrollingView?, searchMenu: MySearchMenu, surfaceColor: Boolean) {
-        this.scrollingView = scrollingView
-        this.mySearchMenu = searchMenu
-        if (scrollingView is RecyclerView) {
-            scrollingView.setOnScrollChangeListener { _, _, _, _, _ ->
-                val newScrollY = scrollingView.computeVerticalScrollOffset()
-                if (newScrollY == 0 || currentOldScrollY == 0) scrollingChanged(newScrollY, surfaceColor)
-                currentScrollY = newScrollY
-                currentOldScrollY = currentScrollY
-            }
-        }
-    }
-
-    private fun scrollingChanged(newScrollY: Int, surfaceColor: Boolean) {
-        if (newScrollY > 0 && currentOldScrollY == 0) {
-            val colorFrom = if (surfaceColor) getSurfaceColor() else getProperBackgroundColor()
-            val colorTo = getColoredMaterialStatusBarColor()
-            animateMySearchMenuColors(colorFrom, colorTo)
-        } else if (newScrollY == 0 && currentOldScrollY > 0) {
-            val colorFrom = if (surfaceColor) getSurfaceColor() else getProperBackgroundColor()
-            val colorTo = getRequiredStatusBarColor(surfaceColor)
-            animateMySearchMenuColors(colorFrom, colorTo)
-        }
-    }
-
-    private fun getStartRequiredStatusBarColor(): Int {
-        val useSurfaceColor = isDynamicTheme() && !isSystemInDarkMode()
-        val scrollingViewOffset = scrollingView?.computeVerticalScrollOffset() ?: 0
-        return if (scrollingViewOffset == 0) {
-            if (useSurfaceColor) getSurfaceColor() else getProperBackgroundColor()
-        } else {
-            getColoredMaterialStatusBarColor()
-        }
+        setupSearchMenuScrollListener(
+            scrollingView = myRecyclerView,
+            searchMenu = binding.mainMenu,
+            surfaceColor = useSurfaceColor
+        )
     }
 
     private fun setupTabs() {
@@ -770,7 +725,7 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
                 binding.viewPager.currentItem = it.position
                 updateBottomTabItemColors(it.customView, true, getSelectedTabDrawableIds()[it.position])
 
-                if (config.openSearch) {
+                if (config.openSearch && config.showSearchBar) {
                     if (getCurrentFragment() is ContactsFragment) {
                         binding.mainMenu.requestFocusAndShowKeyboard()
                     }
@@ -796,12 +751,26 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
 
     private fun launchDialpad() {
         hideKeyboard()
+        val isNewApp = isNewApp()
         val simpleDialer = "com.goodwy.dialer"
         val simpleDialerDebug = "com.goodwy.dialer.debug"
-        if ((0..config.appRecommendationDialogCount).random() == 2 && (!isPackageInstalled(simpleDialer) && !isPackageInstalled(simpleDialerDebug))) {
+        val newSimpleDialer = "dev.goodwy.phone"
+        val newSimpleDialerDebug = "dev.goodwy.phone.debug"
+        if ((0..config.appRecommendationDialogCount).random() == 2 &&
+            (!isPackageInstalled(simpleDialer) && !isPackageInstalled(simpleDialerDebug) &&
+                !isPackageInstalled(newSimpleDialer) && !isPackageInstalled(newSimpleDialerDebug))
+        ) {
             runOnUiThread {
-                NewAppDialog(this, simpleDialer, getString(com.goodwy.strings.R.string.recommendation_dialog_dialer_g), getString(com.goodwy.commons.R.string.right_dialer),
-                    AppCompatResources.getDrawable(this, R.drawable.ic_launcher_dialer)) {}
+                NewAppDialog(
+                    activity =this,
+                    packageName = if (isNewApp) newSimpleDialer else simpleDialer,
+                    title =getString(com.goodwy.strings.R.string.recommendation_dialog_dialer_g),
+                    text = if (isNewApp) "AlRight Phone" else getString(com.goodwy.commons.R.string.right_dialer),
+                    drawable = AppCompatResources.getDrawable(
+                        this,
+                        if (isNewApp) com.goodwy.commons.R.drawable.ic_dialer_new else com.goodwy.commons.R.drawable.ic_dialer
+                    )
+                ) {}
             }
         } else {
             Intent(Intent.ACTION_DIAL).apply {
@@ -870,15 +839,40 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
         }
     }
 
-    override fun contactClicked(contact: Contact) {
-        handleGenericContactClick(contact)
+    override fun contactClicked(contact: Contact, isFavorite: Boolean) {
+        handleGenericContactClick(contact, isFavorite)
     }
 
-    private fun getAllFragments() = arrayListOf<MyViewPagerFragment<*>?>(
-        findViewById(R.id.favorites_fragment),
-        findViewById(R.id.contacts_fragment),
-        findViewById(R.id.groups_fragment)
-    )
+//    private fun getAllFragments() = arrayListOf<MyViewPagerFragment<*>?>(
+//        findViewById(R.id.favorites_fragment),
+//        findViewById(R.id.contacts_fragment),
+//        findViewById(R.id.groups_fragment)
+//    )
+
+    private fun getAllFragments(): ArrayList<MyViewPagerFragment<*>?> {
+        val showTabs = config.showTabs
+        val fragments = arrayListOf<MyViewPagerFragment<*>?>()
+
+        if (showTabs and TAB_FAVORITES > 0) {
+            fragments.add(getFavoritesFragment())
+        }
+
+        if (showTabs and TAB_CONTACTS > 0) {
+            fragments.add(getContactsFragment())
+        }
+
+        if (showTabs and TAB_GROUPS > 0) {
+            fragments.add(getGroupsFragment())
+        }
+
+        return fragments
+    }
+
+    private fun getFavoritesFragment(): FavoritesFragment? = findViewById(R.id.favorites_fragment)
+
+    private fun getContactsFragment(): ContactsFragment? = findViewById(R.id.contacts_fragment)
+
+    private fun getGroupsFragment(): GroupsFragment? = findViewById(R.id.groups_fragment)
 
     private fun getDefaultTab(): Int {
         val showTabsMask = config.showTabs
@@ -918,23 +912,44 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
     }
 
     private fun checkWhatsNewDialog() {
-        arrayListOf<Release>().apply {
-            add(Release(414, R.string.release_414))
-            add(Release(500, R.string.release_500))
-            add(Release(510, R.string.release_510))
-            add(Release(520, R.string.release_520))
-            add(Release(521, R.string.release_521))
-            add(Release(522, R.string.release_522))
-            add(Release(523, R.string.release_523))
-            add(Release(524, R.string.release_524))
-            add(Release(610, R.string.release_610))
-            add(Release(611, R.string.release_611))
-            add(Release(612, R.string.release_612))
-            add(Release(620, R.string.release_620))
-            add(Release(621, R.string.release_621))
-            add(Release(700, R.string.release_700))
-            add(Release(701, R.string.release_701))
+        whatsNewList().apply {
             checkWhatsNew(this, BuildConfig.VERSION_CODE)
+        }
+    }
+
+    private fun checkErrorDialog() {
+        if (baseConfig.lastError != "") {
+            ConfirmationDialog(
+                this,
+                "An error occurred while the application was running. Please send us this error so we can fix it.",
+                positive = com.goodwy.commons.R.string.send_email
+            ) {
+                val appName = getString(R.string.app_name_g)
+                val versionName = BuildConfig.VERSION_NAME
+                val body = "$appName($versionName) : LastError"
+                val address = getMyMailString()
+                val lastError = baseConfig.lastError
+
+                val emailIntent = Intent(ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
+                    putExtra(Intent.EXTRA_SUBJECT, body)
+                    putExtra(Intent.EXTRA_TEXT, lastError)
+
+                    // set the type for better compatibility
+                    type = "message/rfc822"
+                }
+
+                try {
+                    startActivity(Intent.createChooser(emailIntent, "Send email"))
+                } catch (_: ActivityNotFoundException) {
+                    toast(com.goodwy.commons.R.string.no_app_found)
+                } catch (e: Exception) {
+                    showErrorToast(e)
+                }
+
+                baseConfig.lastError = ""
+            }
         }
     }
 }

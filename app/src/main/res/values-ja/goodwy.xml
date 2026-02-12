@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">着信音はプライベートコンタクトには使用できません</string>
-    <string name="show_private_contacts_g">プライベート連絡先を右ダイヤラーと右メッセージに表示する</string>
+    <string name="show_private_contacts_g">右の電話、メッセージ、カレンダーアプリで個人の連絡先を表示する</string>
+    <string name="show_private_contacts_n">AlRight 電話、メッセージ、カレンダー アプリで個人の連絡先を表示します</string>
+    <string name="on_favorite_click">お気に入りをクリックすると</string>
 
 </resources>

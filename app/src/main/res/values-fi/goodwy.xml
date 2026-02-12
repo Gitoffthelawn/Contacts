@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Soittoääni ei ole käytettävissä yksityiseen yhteydenottoon</string>
-    <string name="show_private_contacts_g">Näytä yksityiset yhteystiedot Right Dialerille ja Right Messagesille</string>
+    <string name="show_private_contacts_g">Näytä henkilökohtaiset yhteystiedot oikeissa puhelin-, viesti- ja kalenterisovelluksissa</string>
+    <string name="show_private_contacts_n">Näytä henkilökohtaiset yhteystiedot AlRightin puhelin-, viesti- ja kalenterisovelluksissa</string>
+    <string name="on_favorite_click">Kun napsautat suosikkia</string>
 
 </resources>

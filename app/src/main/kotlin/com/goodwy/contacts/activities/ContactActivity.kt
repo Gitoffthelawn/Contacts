@@ -7,7 +7,9 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
 import android.net.Uri
-import android.provider.ContactsContract.CommonDataKinds.*
+import android.provider.ContactsContract.CommonDataKinds.BaseTypes
+import android.provider.ContactsContract.CommonDataKinds.Im
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
 import android.widget.ImageView
 import androidx.appcompat.content.res.AppCompatResources
 import com.bumptech.glide.Glide
@@ -21,8 +23,12 @@ import com.bumptech.glide.request.target.Target
 import com.goodwy.commons.dialogs.ConfirmationDialog
 import com.goodwy.commons.dialogs.NewAppDialog
 import com.goodwy.commons.dialogs.RadioGroupDialog
-import com.goodwy.commons.extensions.*
-import com.goodwy.commons.helpers.*
+import com.goodwy.commons.extensions.beGone
+import com.goodwy.commons.extensions.launchSendSMSIntent
+import com.goodwy.commons.extensions.realScreenSize
+import com.goodwy.commons.extensions.sendEmailIntent
+import com.goodwy.commons.extensions.showErrorToast
+import com.goodwy.commons.helpers.ContactsHelper
 import com.goodwy.commons.models.RadioItem
 import com.goodwy.commons.models.contacts.Contact
 import com.goodwy.contacts.R
@@ -30,14 +36,43 @@ import com.goodwy.contacts.extensions.shareContacts
 import com.goodwy.contacts.extensions.config
 import androidx.core.net.toUri
 import androidx.core.graphics.drawable.toDrawable
+import com.goodwy.commons.extensions.getProperBackgroundColor
+import com.goodwy.commons.extensions.isPackageInstalled
+import com.goodwy.commons.extensions.setNavigationBarAppearance
+import com.goodwy.commons.helpers.PROTOCOL_DISCORD
+import com.goodwy.commons.helpers.PROTOCOL_FACEBOOK
+import com.goodwy.commons.helpers.PROTOCOL_GOOGLE_CHAT
+import com.goodwy.commons.helpers.PROTOCOL_INSTAGRAM
+import com.goodwy.commons.helpers.PROTOCOL_LINE
+import com.goodwy.commons.helpers.PROTOCOL_LINKEDIN
+import com.goodwy.commons.helpers.PROTOCOL_MATRIX
+import com.goodwy.commons.helpers.PROTOCOL_SIGNAL
+import com.goodwy.commons.helpers.PROTOCOL_TEAMS
+import com.goodwy.commons.helpers.PROTOCOL_TELEGRAM
+import com.goodwy.commons.helpers.PROTOCOL_TELEGRAM_CHANNEL
+import com.goodwy.commons.helpers.PROTOCOL_THREEMA
+import com.goodwy.commons.helpers.PROTOCOL_TWITTER
+import com.goodwy.commons.helpers.PROTOCOL_VIBER
+import com.goodwy.commons.helpers.PROTOCOL_WECHAT
+import com.goodwy.commons.helpers.PROTOCOL_WECOM
+import com.goodwy.commons.helpers.PROTOCOL_WHATSAPP
+import com.goodwy.commons.helpers.SimpleContactsHelper
 
 abstract class ContactActivity : SimpleActivity() {
-    protected val PICK_RINGTONE_INTENT_ID = 1500
-    protected val INTENT_SELECT_RINGTONE = 600
+    companion object {
+        protected const val PICK_RINGTONE_INTENT_ID = 1500
+        protected const val INTENT_SELECT_RINGTONE = 600
+    }
 
     protected var contact: Contact? = null
     protected var originalRingtone: String? = null
     protected var currentContactPhotoPath = ""
+
+    override fun onResume() {
+        super.onResume()
+//        window.insetsController().isAppearanceLightStatusBars = false
+        window.setNavigationBarAppearance(getProperBackgroundColor())
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)

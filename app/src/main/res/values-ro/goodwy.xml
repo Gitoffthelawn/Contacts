@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Tonul de apel nu este disponibil pentru contactul privat</string>
-    <string name="show_private_contacts_g">Afișează contactele private către Right Dialer și Right Messages</string>
+    <string name="show_private_contacts_g">Afișează contactele personale în aplicațiile Telefon corect, Mesaje și Calendar</string>
+    <string name="show_private_contacts_n">Afișați contactele personale în aplicațiile AlRight Phone, Messages și Calendar</string>
+    <string name="on_favorite_click">Când faceți clic pe un favorit</string>
 
 </resources>

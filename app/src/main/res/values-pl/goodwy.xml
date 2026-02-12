@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Dzwonek nie jest dostępny dla kontaktu prywatnego</string>
-    <string name="show_private_contacts_g">Pokaż prywatne kontakty w prawym wybieraku i w prawej wiadomości</string>
+    <string name="show_private_contacts_g">Wyświetlaj kontakty osobiste w aplikacjach Prawy telefon, Wiadomości i Kalendarz</string>
+    <string name="show_private_contacts_n">Wyświetlaj kontakty osobiste w aplikacjach Telefon, Wiadomości i Kalendarz</string>
+    <string name="on_favorite_click">Kiedy klikniesz na ulubione</string>
 
 </resources>

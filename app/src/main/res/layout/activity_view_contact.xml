@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contact_wrapper"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <ImageView
         android:id="@+id/contact_photo_big"
@@ -13,6 +14,7 @@
         android:alpha="0"
         android:background="#BB000000"
         android:clickable="true"
+        android:contentDescription="@null"
         android:elevation="8dp"
         android:padding="@dimen/activity_margin"
         android:scaleType="fitCenter"
@@ -24,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@android:color/transparent"
+        android:fitsSystemWindows="true"
         android:elevation="0dp"
         app:elevation="0dp"
         tools:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">

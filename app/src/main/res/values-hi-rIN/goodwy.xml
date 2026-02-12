@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">निजी संपर्क के लिए रिंगटोन उपलब्ध नहीं है</string>
-    <string name="show_private_contacts_g">निजी संपर्कों को दाएँ डायलर और दाएँ संदेशों पर दिखाएँ</string>
+    <string name="show_private_contacts_g">सही फ़ोन, मैसेज और कैलेंडर ऐप्स में व्यक्तिगत संपर्क दिखाएँ</string>
+    <string name="show_private_contacts_n">AlRight Phone, Messages और Calendar ऐप्स में व्यक्तिगत संपर्क दिखाएं</string>
+    <string name="on_favorite_click">जब आप किसी पसंदीदा आइटम पर क्लिक करते हैं</string>
 
 </resources>

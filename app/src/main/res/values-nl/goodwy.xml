@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Beltoon is niet beschikbaar voor privécontact</string>
-    <string name="show_private_contacts_g">Toon privécontacten aan de rechterkiezer en rechterberichten</string>
+    <string name="show_private_contacts_g">Toon persoonlijke contacten in de juiste telefoon-, berichten- en agenda-apps.</string>
+    <string name="show_private_contacts_n">Toon persoonlijke contacten in de AlRight Telefoon-, Berichten- en Agenda-apps.</string>
+    <string name="on_favorite_click">Wanneer je op een favoriet klikt</string>
 
 </resources>

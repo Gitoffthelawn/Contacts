@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Helin pole privaatseks kontaktiks saadaval</string>
-    <string name="show_private_contacts_g">Näita privaatkontakte Right Dialerile ja Right Messagesile</string>
+    <string name="show_private_contacts_g">Kuva isiklikud kontaktid õigetes telefoni-, sõnumi- ja kalendrirakendustes</string>
+    <string name="show_private_contacts_n">Isiklike kontaktide kuvamine AlRighti telefoni-, sõnumi- ja kalendrirakendustes</string>
+    <string name="on_favorite_click">Kui klõpsate lemmikul</string>
 
 </resources>

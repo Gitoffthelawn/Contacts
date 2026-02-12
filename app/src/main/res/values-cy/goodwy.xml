@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Nid yw\'r tôn ffôn ar gael ar gyfer cyswllt preifat</string>
-    <string name="show_private_contacts_g">Dangos cysylltiadau preifat i\'r Deialydd Dde a Negeseuon Dde</string>
+    <string name="show_private_contacts_g">Dangos cysylltiadau personol yn yr apiau Ffôn, Negeseuon a Chalendr Cywir</string>
+    <string name="show_private_contacts_n">Dangos cysylltiadau personol yn apiau Ffôn, Negeseuon a Chalendr AlRight</string>
+    <string name="on_favorite_click">Pan gliciwch ar ffefryn</string>
 
 </resources>

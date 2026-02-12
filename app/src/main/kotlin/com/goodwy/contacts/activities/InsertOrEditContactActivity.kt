@@ -1,9 +1,7 @@
 package com.goodwy.contacts.activities
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -38,6 +36,9 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
     private var isSelectContactIntent = false
     private var specialMimeType: String? = null
     private var isSpeechToTextAvailable = false
+
+    override var isSearchBarEnabled = true
+
     private val binding by viewBinding(ActivityInsertEditContactBinding::inflate)
 
     private val contactsFavoritesList = arrayListOf(
@@ -50,7 +51,10 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
         setContentView(binding.root)
         setupOptionsMenu()
         isSelectContactIntent = intent.action == Intent.ACTION_PICK
-        updateMaterialActivityViews(binding.insertEditCoordinator, binding.insertEditContactHolder, useTransparentNavigation = false, useTopSearchMenu = true)
+
+        setupEdgeToEdge(
+            padBottomImeAndSystem = listOf(binding.insertEditTabsHolder),
+        )
 
         if (isSelectContactIntent) {
             specialMimeType = when (intent.data) {
@@ -93,8 +97,8 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
     }
 
     private fun setupOptionsMenu() {
-        binding.insertEditMenu.getToolbar().inflateMenu(R.menu.menu_insert_or_edit)
-        binding.insertEditMenu.toggleHideOnScroll(false)
+        binding.insertEditMenu.requireToolbar().inflateMenu(R.menu.menu_insert_or_edit)
+//        binding.insertEditMenu.toggleHideOnScroll(false)
 
         if (baseConfig.useSpeechToText) {
             isSpeechToTextAvailable = isSpeechToTextAvailable()
@@ -118,7 +122,7 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
             binding.insertEditMenu.clearSearch()
         }
 
-        binding.insertEditMenu.getToolbar().setOnMenuItemClickListener { menuItem ->
+        binding.insertEditMenu.requireToolbar().setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.sort -> showSortingDialog()
                 R.id.filter -> showFilterDialog()
@@ -132,7 +136,6 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
         val useSurfaceColor = isDynamicTheme() && !isSystemInDarkMode()
         val backgroundColor = if (useSurfaceColor) getSurfaceColor() else getProperBackgroundColor()
         binding.insertEditContactHolder.setBackgroundColor(backgroundColor)
-        updateStatusbarColor(backgroundColor)
         binding.insertEditMenu.updateColors(background = backgroundColor)
     }
 
@@ -154,11 +157,12 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
         }
     }
 
-    override fun onBackPressed() {
-        if (binding.insertEditMenu.isSearchOpen) {
+    override fun onBackPressedCompat(): Boolean {
+        return if (binding.insertEditMenu.isSearchOpen) {
             binding.insertEditMenu.closeSearch()
+            true
         } else {
-            super.onBackPressed()
+            false
         }
     }
 
@@ -254,14 +258,6 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
             if (isDynamicTheme() && !isSystemInDarkMode()) getColoredMaterialStatusBarColor()
             else getSurfaceColor()
         binding.insertEditTabsHolder.setBackgroundColor(bottomBarColor)
-        if (binding.insertEditTabsHolder.tabCount != 1) updateNavigationBarColor(bottomBarColor)
-        else {
-            // TODO TRANSPARENT Navigation Bar
-            setWindowTransparency(true) { _, bottomNavigationBarSize, leftNavigationBarSize, rightNavigationBarSize ->
-                binding.insertEditCoordinator.setPadding(leftNavigationBarSize, 0, rightNavigationBarSize, 0)
-
-            }
-        }
     }
 
     private fun getInactiveTabIndexes(activeIndex: Int) = (0 until binding.insertEditTabsHolder.tabCount).filter { it != activeIndex }
@@ -325,7 +321,7 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
         }
     }
 
-    override fun contactClicked(contact: Contact) {
+    override fun contactClicked(contact: Contact, isFavorite: Boolean) {
         hideKeyboard()
         if (isSelectContactIntent) {
             Intent().apply {
@@ -389,7 +385,7 @@ class InsertOrEditContactActivity : SimpleActivity(), RefreshContactsListener {
 
             try {
                 startActivityForResult(this, START_INSERT_ACTIVITY)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 toast(com.goodwy.commons.R.string.no_app_found)
             } catch (e: Exception) {
                 showErrorToast(e)

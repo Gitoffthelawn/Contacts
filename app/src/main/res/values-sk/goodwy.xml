@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Vyzváňací tón nie je k dispozícii pre súkromný kontakt</string>
-    <string name="show_private_contacts_g">Zobraziť súkromné ​​kontakty aplikáciám Right Dialer a Right Messages</string>
+    <string name="show_private_contacts_g">Zobrazenie osobných kontaktov v aplikáciách Right Telefón, Správy a Kalendár</string>
+    <string name="show_private_contacts_n">Zobrazenie osobných kontaktov v aplikáciách AlRight Phone, Messages a Calendar</string>
+    <string name="on_favorite_click">Keď kliknete na obľúbenú položku</string>
 
 </resources>

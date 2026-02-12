@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import com.reddit.indicatorfastscroll.FastScrollItemIndicator
 import com.goodwy.commons.extensions.*
 import com.goodwy.commons.helpers.ensureBackgroundThread
+import com.goodwy.commons.helpers.getProperText
 import com.goodwy.commons.models.contacts.Contact
 import com.goodwy.commons.views.MySearchMenuTop
 import com.goodwy.contacts.R
@@ -29,7 +30,7 @@ class SelectContactsDialog(
     private val selectedContacts = HashSet<Contact>()
     private val searchView = binding.selectContactSearchView
     private val searchEditText = searchView.binding.topToolbarSearch
-    private val searchViewAppBarLayout = searchView.binding.topAppBarLayout
+//    private val searchViewAppBarLayout = searchView.binding.topAppBarLayout
 
     init {
         if (selectContacts == null) {
@@ -160,7 +161,7 @@ class SelectContactsDialog(
     }
 
     private fun MySearchMenuTop.updateSearchViewUi() {
-        getToolbar().beInvisible()
+        requireToolbar().beInvisible()
 
         val backgroundColor = when {
             context.isDynamicTheme() -> resources.getColor(com.goodwy.commons.R.color.you_dialog_background_color, context.theme)
@@ -169,7 +170,7 @@ class SelectContactsDialog(
         }
         updateColors(background = backgroundColor)
         setBackgroundColor(Color.TRANSPARENT)
-        searchViewAppBarLayout.setBackgroundColor(Color.TRANSPARENT)
+//        searchViewAppBarLayout.setBackgroundColor(Color.TRANSPARENT)
     }
 
     private fun MySearchMenuTop.setSearchViewListeners() {
@@ -198,7 +199,23 @@ class SelectContactsDialog(
     private fun filterContactListBySearchQuery(query: String = "") {
         var contactsToShow = allContacts
         if (query.isNotEmpty()) {
-            contactsToShow = contactsToShow.filter { it.name.contains(query, true) }.toMutableList() as ArrayList<Contact>
+//            contactsToShow = contactsToShow.filter { it.name.contains(query, true) }.toMutableList() as ArrayList<Contact>
+            val shouldNormalize = query.normalizeString() == query
+            contactsToShow = contactsToShow.filter {
+                getProperText(it.getNameToDisplay(), shouldNormalize).contains(query, true) ||
+                    getProperText(it.nickname, shouldNormalize).contains(query, true) ||
+                    (query.toLongOrNull() != null && it.phoneNumbers.any {
+                        query.normalizePhoneNumber().isNotEmpty() && it.normalizedNumber.contains(query.normalizePhoneNumber(), true)
+                    }) ||
+                    it.emails.any { it.value.contains(query, true) } ||
+                    it.relations.any { it.name.contains(query, true) } ||
+                    it.addresses.any { getProperText(it.value, shouldNormalize).contains(query, true) } ||
+                    it.IMs.any { it.value.contains(query, true) } ||
+                    getProperText(it.notes, shouldNormalize).contains(query, true) ||
+                    getProperText(it.organization.company, shouldNormalize).contains(query, true) ||
+                    getProperText(it.organization.jobPosition, shouldNormalize).contains(query, true) ||
+                    it.websites.any { it.contains(query, true) }
+            }.toMutableList() as ArrayList<Contact>
         }
         checkPlaceholderVisibility(contactsToShow)
 

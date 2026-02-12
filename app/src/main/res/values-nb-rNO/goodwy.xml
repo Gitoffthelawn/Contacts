@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Ringetone er ikke tilgjengelig for privat kontakt</string>
-    <string name="show_private_contacts_g">Vis private kontakter til høyre oppringer og høyre meldinger</string>
+    <string name="show_private_contacts_g">Vis personlige kontakter i de riktige appene for telefon, meldinger og kalender</string>
+    <string name="show_private_contacts_n">Vis personlige kontakter i AlRight-appene for telefon, meldinger og kalender</string>
+    <string name="on_favorite_click">Når du klikker på en favoritt</string>
 
 </resources>

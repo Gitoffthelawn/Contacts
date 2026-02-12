@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">O ton de chamada non está dispoñible para o contacto privado</string>
-    <string name="show_private_contacts_g">Mostrar contactos privados a Right Dialer e Right Messages</string>
+    <string name="show_private_contacts_g">Mostrar contactos persoais nas aplicacións Teléfono correcto, Mensaxes e Calendario</string>
+    <string name="show_private_contacts_n">Mostrar contactos persoais nas aplicacións AlRight Phone, Messages e Calendar</string>
+    <string name="on_favorite_click">Ao facer clic nun favorito</string>
 
 </resources>

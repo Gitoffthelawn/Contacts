@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Zəng melodiyası şəxsi əlaqə üçün mövcud deyil</string>
-    <string name="show_private_contacts_g">Şəxsi kontaktları Right Dialer və Right Messages-a göstərin</string>
+    <string name="show_private_contacts_g">Şəxsi əlaqələri Doğru Telefon, Mesajlar və Təqvim tətbiqlərində göstərin</string>
+    <string name="show_private_contacts_n">AlRight Telefon, Mesajlar və Təqvim tətbiqlərində şəxsi əlaqələri göstərin</string>
+    <string name="on_favorite_click">Sevimlini kliklədiyiniz zaman</string>
 
 </resources>

@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Ringtono ne disponeblas por privata kontakto</string>
-    <string name="show_private_contacts_g">Montri privatajn kontaktojn al Right Dialer kaj Right Messages</string>
+    <string name="show_private_contacts_g">Montri personajn kontaktojn en la aplikaĵoj Ĝusta Telefono, Mesaĝoj kaj Kalendaro</string>
+    <string name="show_private_contacts_n">Montri personajn kontaktojn en la aplikaĵoj AlRight Telefono, Mesaĝoj kaj Kalendaro</string>
+    <string name="on_favorite_click">Kiam vi alklakas ŝatatan</string>
 
 </resources>

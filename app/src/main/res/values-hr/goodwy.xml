@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Melodija zvona nije dostupna za privatni kontakt</string>
-    <string name="show_private_contacts_g">Prikaži privatne kontakte aplikacijama Right Dialer i Right Messages</string>
+    <string name="show_private_contacts_g">Prikaz osobnih kontakata u aplikacijama Right Phone, Messages i Calendar</string>
+    <string name="show_private_contacts_n">Prikaz osobnih kontakata u aplikacijama AlRight Phone, Messages i Calendar</string>
+    <string name="on_favorite_click">Kada kliknete na favorita</string>
 
 </resources>

@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Мелодія дзвінка недоступна для приватного контакту</string>
-    <string name="show_private_contacts_g">Показувати приватні контакти додаткам Right Dialer та Right Messages</string>
+    <string name="show_private_contacts_g">Показувати особисті контакти у програмах Right Phone, Messages та Calendar</string>
+    <string name="show_private_contacts_n">Показувати особисті контакти у програмах AlRight Phone, Messages та Calendar</string>
+    <string name="on_favorite_click">При натисканні на обраний</string>
 
 </resources>

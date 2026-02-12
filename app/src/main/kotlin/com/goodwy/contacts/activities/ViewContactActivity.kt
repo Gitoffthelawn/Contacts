@@ -57,8 +57,6 @@ class ViewContactActivity : ContactActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        showTransparentTop = true
-        isMaterialActivity = true
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
@@ -66,14 +64,8 @@ class ViewContactActivity : ContactActivity() {
             return
         }
 
-        updateMaterialActivityViews(
-            binding.contactWrapper,
-            binding.contactHolder,
-            useTransparentNavigation = true,
-            useTopSearchMenu = false
-        )
+        setupEdgeToEdge(padBottomSystem = listOf(binding.contactScrollview))
 
-        binding.contactWrapper.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setupMenu()
         initButton()
     }
@@ -164,11 +156,12 @@ class ViewContactActivity : ContactActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (binding.contactPhotoBig.alpha == 1f) {
+    override fun onBackPressedCompat(): Boolean {
+        return if (binding.contactPhotoBig.alpha == 1f) {
             hideBigContactPhoto()
+            true
         } else {
-            super.onBackPressed()
+            false
         }
     }
 
@@ -176,8 +169,6 @@ class ViewContactActivity : ContactActivity() {
         val contrastColor = getProperBackgroundColor().getContrastColor()
         val primaryColor = getProperPrimaryColor()
         val iconColor = if (baseConfig.topAppBarColorIcon) primaryColor else contrastColor
-        //(contact_appbar.layoutParams as CoordinatorLayout.LayoutParams).topMargin = statusBarHeight
-        (binding.contactWrapper.layoutParams as FrameLayout.LayoutParams).topMargin = statusBarHeight
         binding.contactToolbar.overflowIcon = resources.getColoredDrawableWithColor(com.goodwy.commons.R.drawable.ic_three_dots_vector, iconColor)
         binding.contactToolbar.menu.apply {
             updateMenuItemColors(this)
@@ -857,7 +848,7 @@ class ViewContactActivity : ContactActivity() {
         if (contact!!.emails.isNotEmpty()) binding.contactSendEmail.setOnClickListener { trySendEmail() }
 
         binding.contactSendSms.setOnLongClickListener { toast(com.goodwy.commons.R.string.send_sms); true; }
-        binding.contactStartCall.setOnLongClickListener { toast(R.string.call_contact); true; }
+        binding.contactStartCall.setOnLongClickListener { toast(com.goodwy.commons.R.string.call_contact); true; }
         binding.contactVideoCall.setOnLongClickListener { toast(com.goodwy.strings.R.string.video_call); true; }
         binding.contactSendEmail.setOnLongClickListener { toast(com.goodwy.commons.R.string.send_email); true; }
     }

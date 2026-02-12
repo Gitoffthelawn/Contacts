@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Мелодијата за ѕвонење не е достапна за приватен контакт</string>
-    <string name="show_private_contacts_g">Прикажи приватни контакти на десниот бирач и десните пораки</string>
+    <string name="show_private_contacts_g">Прикажи лични контакти во соодветните апликации за телефон, пораки и календар</string>
+    <string name="show_private_contacts_n">Прикажи лични контакти во апликациите AlRight Phone, Messages и Calendar</string>
+    <string name="on_favorite_click">Кога ќе кликнете на омилено</string>
 </resources>

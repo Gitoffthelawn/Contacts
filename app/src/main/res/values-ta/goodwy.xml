@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">தனிப்பட்ட தொடர்புக்கு ரிங்டோன் கிடைக்கவில்லை.</string>
-    <string name="show_private_contacts_g">வலது டயலர் மற்றும் வலது செய்திகளுக்கு தனிப்பட்ட தொடர்புகளைக் காட்டு</string>
+    <string name="show_private_contacts_g">வலது தொலைபேசி, செய்திகள் மற்றும் கேலெண்டர் பயன்பாடுகளில் தனிப்பட்ட தொடர்புகளைக் காட்டு</string>
+    <string name="show_private_contacts_n">AlRight Phone, Messages மற்றும் Calendar பயன்பாடுகளில் தனிப்பட்ட தொடர்புகளைக் காட்டு</string>
+    <string name="on_favorite_click">உங்களுக்குப் பிடித்ததைக் கிளிக் செய்யும்போது</string>
 </resources>

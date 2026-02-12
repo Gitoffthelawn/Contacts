@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">ਰਿੰਗਟੋਨ ਨਿੱਜੀ ਸੰਪਰਕ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</string>
-    <string name="show_private_contacts_g">ਸੱਜੇ ਡਾਇਲਰ ਅਤੇ ਸੱਜੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਨਿੱਜੀ ਸੰਪਰਕ ਦਿਖਾਓ</string>
+    <string name="show_private_contacts_g">ਸਹੀ ਫ਼ੋਨ, ਸੁਨੇਹੇ ਅਤੇ ਕੈਲੰਡਰ ਐਪਾਂ ਵਿੱਚ ਨਿੱਜੀ ਸੰਪਰਕ ਦਿਖਾਓ</string>
+    <string name="show_private_contacts_n">AlRight ਫ਼ੋਨ, ਸੁਨੇਹੇ, ਅਤੇ ਕੈਲੰਡਰ ਐਪਾਂ ਵਿੱਚ ਨਿੱਜੀ ਸੰਪਰਕ ਦਿਖਾਓ</string>
+    <string name="on_favorite_click">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਮਨਪਸੰਦ \'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ</string>
 </resources>

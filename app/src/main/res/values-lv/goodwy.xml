@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">Zvana signāls nav pieejams privātiem kontaktiem</string>
-    <string name="show_private_contacts_g">Rādīt privātos kontaktus labajā zvanītājā un labajās ziņās</string>
+    <string name="show_private_contacts_g">Rādīt personiskos kontaktus pareizajās tālruņa, ziņojumu un kalendāra lietotnēs</string>
+    <string name="show_private_contacts_n">Rādīt personiskos kontaktus AlRight tālruņu, ziņojumu un kalendāra lietotnēs</string>
+    <string name="on_favorite_click">Kad noklikšķināt uz iecienītākā vienuma</string>
 </resources>

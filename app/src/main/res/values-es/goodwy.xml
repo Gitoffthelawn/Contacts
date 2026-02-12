@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">El tono de llamada no está disponible para contactos privados</string>
-    <string name="show_private_contacts_g">Mostrar contactos privados a Right Dialer y Right Messages</string>
+    <string name="show_private_contacts_g">Mostrar contactos personales en las aplicaciones Teléfono, Mensajes y Calendario correctas</string>
+    <string name="show_private_contacts_n">Mostrar contactos personales en las aplicaciones AlRight Phone, Mensajes y Calendario</string>
+    <string name="on_favorite_click">Cuando haces clic en un favorito</string>
 
 </resources>

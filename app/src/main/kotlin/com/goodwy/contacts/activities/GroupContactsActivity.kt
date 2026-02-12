@@ -5,12 +5,10 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.goodwy.commons.dialogs.ConfirmationDialog
 import com.goodwy.commons.extensions.*
 import com.goodwy.commons.helpers.ContactsHelper
 import com.goodwy.commons.helpers.NavigationIcon
-import com.goodwy.commons.helpers.TAB_GROUPS
 import com.goodwy.commons.helpers.ensureBackgroundThread
 import com.goodwy.commons.models.contacts.Contact
 import com.goodwy.commons.models.contacts.Group
@@ -20,6 +18,7 @@ import com.goodwy.contacts.databinding.ActivityGroupContactsBinding
 import com.goodwy.contacts.dialogs.RenameGroupDialog
 import com.goodwy.contacts.dialogs.SelectContactsDialog
 import com.goodwy.contacts.extensions.handleGenericContactClick
+import com.goodwy.contacts.extensions.viewContact
 import com.goodwy.contacts.helpers.GROUP
 import com.goodwy.contacts.helpers.LOCATION_GROUP_CONTACTS
 import com.goodwy.contacts.interfaces.RefreshContactsListener
@@ -37,21 +36,18 @@ class GroupContactsActivity : SimpleActivity(), RemoveFromGroupListener, Refresh
     protected var contact: Contact? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        isMaterialActivity = true
+        useOverflowIcon = false
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         updateTextColors(binding.groupContactsCoordinator)
         setupOptionsMenu()
 
-        updateMaterialActivityViews(
-            mainCoordinatorLayout = binding.groupContactsCoordinator,
-            nestedView = binding.groupContactsList,
-            useTransparentNavigation = true,
-            useTopSearchMenu = false
+        setupEdgeToEdge(
+            padBottomImeAndSystem = listOf(binding.groupContactsList)
         )
 
         val useSurfaceColor = isDynamicTheme() && !isSystemInDarkMode()
-        setupMaterialScrollListener(binding.groupContactsList, binding.groupContactsToolbar, useSurfaceColor)
+        setupMaterialScrollListener(binding.groupContactsList, binding.groupContactsAppbar, useSurfaceColor)
 
         val backgroundColor = if (useSurfaceColor) getSurfaceColor() else getProperBackgroundColor()
         binding.groupContactsCoordinator.setBackgroundColor(backgroundColor)
@@ -79,16 +75,7 @@ class GroupContactsActivity : SimpleActivity(), RemoveFromGroupListener, Refresh
     override fun onResume() {
         super.onResume()
         refreshContacts()
-
-        val useSurfaceColor = isDynamicTheme() && !isSystemInDarkMode()
-        val backgroundColor = if (useSurfaceColor) getSurfaceColor() else getProperBackgroundColor()
-        setupToolbar(
-            toolbar = binding.groupContactsToolbar,
-            toolbarNavigationIcon = NavigationIcon.Arrow,
-            statusBarColor = backgroundColor,
-        )
-        (binding.groupContactsFab.layoutParams as CoordinatorLayout.LayoutParams).bottomMargin =
-            navigationBarHeight + resources.getDimension(com.goodwy.commons.R.dimen.activity_margin).toInt()
+        setupTopAppBar(binding.groupContactsAppbar, NavigationIcon.Arrow)
     }
 
     private fun setupOptionsMenu() {
@@ -213,10 +200,14 @@ class GroupContactsActivity : SimpleActivity(), RemoveFromGroupListener, Refresh
                 recyclerView = binding.groupContactsList,
                 location = LOCATION_GROUP_CONTACTS,
                 removeListener = this,
-                refreshListener = this
-            ) {
-                contactClicked(it as Contact)
-            }.apply {
+                refreshListener = this,
+                itemClick = {
+                    contactClicked(it as Contact)
+                },
+                profileIconClick = {
+                    viewContact(it as Contact)
+                }
+            ).apply {
                 binding.groupContactsList.adapter = this
             }
 
@@ -232,7 +223,7 @@ class GroupContactsActivity : SimpleActivity(), RemoveFromGroupListener, Refresh
         refreshContacts()
     }
 
-    override fun contactClicked(contact: Contact) {
+    override fun contactClicked(contact: Contact, isFavorite: Boolean) {
         handleGenericContactClick(contact)
     }
 

@@ -7,7 +7,9 @@
     <string name="ringtone_for_private_contact">Ringtone is not available for private contact</string>
 
     <!-- Settings -->
-    <string name="show_private_contacts_g">Show private contacts to Right Dialer and Right Messages</string>
+    <string name="show_private_contacts_g">Show private contacts to Right Phone, Messages, and Calendar</string>
+    <string name="show_private_contacts_n">Show private contacts to AlRight Phone, Messages, and Calendar</string>
+    <string name="on_favorite_click">On a favorite click</string>
 
     <!-- Messengers -->
     <string name="username" translatable="false">Username</string>

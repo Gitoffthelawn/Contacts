@@ -53,6 +53,9 @@ import me.thanel.swipeactionview.SwipeGestureListener
 import java.util.Collections
 import kotlin.math.abs
 import androidx.core.graphics.drawable.toDrawable
+import com.goodwy.commons.extensions.toInt
+import kotlin.compareTo
+import kotlin.div
 
 class ContactsAdapter(
     activity: SimpleActivity,
@@ -64,7 +67,8 @@ class ContactsAdapter(
     private val location: Int,
     private val removeListener: RemoveFromGroupListener?,
     private val enableDrag: Boolean = false,
-    itemClick: (Any) -> Unit
+    itemClick: (Any) -> Unit,
+    private val profileIconClick: ((Any) -> Unit)? = null
 ) : MyRecyclerViewAdapter(activity, recyclerView, itemClick), RecyclerViewFastScroller.OnPopupTextUpdate, ItemTouchHelperContract {
 
     private val NEW_GROUP_ID = -1
@@ -113,7 +117,7 @@ class ContactsAdapter(
                 location == LOCATION_CONTACTS_TAB || location == LOCATION_FAVORITES_TAB || location == LOCATION_GROUP_CONTACTS
             findItem(R.id.cab_delete).isVisible = location == LOCATION_CONTACTS_TAB || location == LOCATION_GROUP_CONTACTS
             findItem(R.id.cab_create_shortcut).isVisible =
-                isOreoPlus() && isOneItemSelected() && (location == LOCATION_FAVORITES_TAB || location == LOCATION_CONTACTS_TAB)
+                isOneItemSelected() && (location == LOCATION_FAVORITES_TAB || location == LOCATION_CONTACTS_TAB)
 
             if (location == LOCATION_GROUP_CONTACTS) {
                 findItem(R.id.cab_remove).title = activity.getString(R.string.remove_from_group)
@@ -409,9 +413,7 @@ class ContactsAdapter(
                     .error(placeholderImage)
 
                 val size = activity.resources.getDimension(com.goodwy.commons.R.dimen.shortcut_size).toInt()
-                val itemToLoad: Any? = contact.photoUri.ifEmpty {
-                    contact.photo
-                }
+                val itemToLoad: Any? = contact.photoUri.ifEmpty { contact.photo }
 
                 val builder = Glide.with(activity)
                     .asDrawable()
@@ -457,7 +459,9 @@ class ContactsAdapter(
             findViewById<FrameLayout>(R.id.item_contact_frame)?.isSelected = selectedKeys.contains(contact.id)
             val fullName = contact.getNameToDisplay()
             findViewById<TextView>(com.goodwy.commons.R.id.item_contact_name).text = if (textToHighlight.isEmpty()) fullName else {
-                if (fullName.contains(textToHighlight, true)) {
+                val normalizedFullName = fullName.normalizeString()
+                val normalizedSearchText = textToHighlight.normalizeString()
+                if (normalizedFullName.contains(normalizedSearchText, true)) {
                     fullName.highlightTextPart(textToHighlight, properPrimaryColor)
                 } else {
                     fullName.highlightTextFromNumbers(textToHighlight, properPrimaryColor)
@@ -490,7 +494,23 @@ class ContactsAdapter(
                 }
             }
 
-            findViewById<ImageView>(com.goodwy.commons.R.id.item_contact_image).beVisibleIf(showContactThumbnails)
+            findViewById<ImageView>(com.goodwy.commons.R.id.item_contact_image).apply {
+                beVisibleIf(showContactThumbnails)
+                if (profileIconClick != null && viewType != VIEW_TYPE_GRID) {
+                    setBackgroundResource(R.drawable.selector_clickable_circle)
+                    setOnClickListener {
+                        if (!actModeCallback.isSelectable) {
+                            profileIconClick.invoke(contact)
+                        } else {
+                            holder.viewClicked(contact)
+                        }
+                    }
+                    setOnLongClickListener {
+                        holder.viewLongClicked()
+                        true
+                    }
+                }
+            }
 
             if (showContactThumbnails) {
                 val placeholderImage = SimpleContactsHelper(context).getContactLetterIcon(fullName).toDrawable(resources)
@@ -508,9 +528,7 @@ class ContactsAdapter(
                         .error(placeholderImage)
                         .centerCrop()
 
-                    val itemToLoad: Any? = contact.photoUri.ifEmpty {
-                        contact.photo
-                    }
+                    val itemToLoad: Any? = contact.photoUri.ifEmpty { contact.photo }
 
                     Glide.with(activity)
                         .load(itemToLoad)
@@ -564,6 +582,21 @@ class ContactsAdapter(
                 }
                 findViewById<RelativeLayout>(R.id.swipeRightIconHolder).setBackgroundColor(swipeActionColor(swipeRightAction))
 
+                val contactsGridColumnCount = activity.config.contactsGridColumnCount
+                if (viewType == VIEW_TYPE_GRID && contactsGridColumnCount > 1) {
+                    val width =
+                        (Resources.getSystem().displayMetrics.widthPixels / contactsGridColumnCount / 2.5).toInt()
+                    findViewById<RelativeLayout>(R.id.swipeLeftIconHolder).setWidth(width)
+                    findViewById<RelativeLayout>(R.id.swipeRightIconHolder).setWidth(width)
+                } else {
+                    val halfScreenWidth = activity.resources.displayMetrics.widthPixels / activity.config.swipeToActionWidth
+                    val swipeWidth = activity.resources.getDimension(com.goodwy.commons.R.dimen.swipe_width)
+                    if (swipeWidth > halfScreenWidth) {
+                        findViewById<RelativeLayout>(R.id.swipeLeftIconHolder).setWidth(halfScreenWidth)
+                        findViewById<RelativeLayout>(R.id.swipeRightIconHolder).setWidth(halfScreenWidth)
+                    }
+                }
+
                 findViewById<SwipeActionView>(R.id.itemContactSwipe).apply {
                     setDirectionEnabled(SwipeDirection.Left, swipeLeftAction != SWIPE_ACTION_NONE)
                     setDirectionEnabled(SwipeDirection.Right, swipeRightAction != SWIPE_ACTION_NONE)
@@ -606,14 +639,6 @@ class ContactsAdapter(
                             }
                         }
                     }
-                }
-
-                val contactsGridColumnCount = activity.config.contactsGridColumnCount
-                if (viewType == VIEW_TYPE_GRID && contactsGridColumnCount > 1) {
-                    val width =
-                        (Resources.getSystem().displayMetrics.widthPixels / contactsGridColumnCount / 2.5).toInt()
-                    findViewById<RelativeLayout>(R.id.swipeLeftIconHolder).setWidth(width)
-                    findViewById<RelativeLayout>(R.id.swipeRightIconHolder).setWidth(width)
                 }
             }
         }
@@ -667,6 +692,7 @@ class ContactsAdapter(
         return when (swipeAction) {
             SWIPE_ACTION_DELETE -> com.goodwy.commons.R.drawable.ic_delete_outline
             SWIPE_ACTION_MESSAGE -> R.drawable.ic_messages
+            SWIPE_ACTION_OPEN -> com.goodwy.commons.R.drawable.ic_info
             SWIPE_ACTION_EDIT -> com.goodwy.commons.R.drawable.ic_edit_vector
             else -> com.goodwy.commons.R.drawable.ic_phone_vector
         }
@@ -678,6 +704,7 @@ class ContactsAdapter(
         return when (swipeAction) {
             SWIPE_ACTION_DELETE -> resources.getColor(com.goodwy.commons.R.color.red_missed, activity.theme)
             SWIPE_ACTION_MESSAGE -> resources.getColor(com.goodwy.commons.R.color.ic_messages, activity.theme)
+            SWIPE_ACTION_OPEN -> resources.getColor(com.goodwy.commons.R.color.ic_contacts, activity.theme)
             SWIPE_ACTION_EDIT -> resources.getColor(R.color.swipe_purple, activity.theme)
             else -> simColor
         }
@@ -687,6 +714,7 @@ class ContactsAdapter(
         when (swipeAction) {
             SWIPE_ACTION_DELETE -> swipedDelete(contact)
             SWIPE_ACTION_MESSAGE -> swipedSMS(contact)
+            SWIPE_ACTION_OPEN -> profileIconClick?.invoke(contact)
             SWIPE_ACTION_EDIT -> swipedEdit(contact)
             else -> swipedCall(contact)
         }
@@ -702,9 +730,7 @@ class ContactsAdapter(
             activity.toast(com.goodwy.commons.R.string.no_phone_number_found)
             return
         }
-        val contactList = ArrayList<Contact>()
-        contactList.add(contact)
-        activity.sendSMSToContacts(contactList)
+        activity.sendSMSContact(contact)
     }
 
     private fun swipedEdit(contact: Contact) {

@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">A csengőhang nem érhető el privát kapcsolattartáshoz</string>
-    <string name="show_private_contacts_g">Privát névjegyek megjelenítése a jobb oldali tárcsázó és a jobb oldali üzenetek számára</string>
+    <string name="show_private_contacts_g">Személyes névjegyek megjelenítése a megfelelő telefon-, üzenet- és naptáralkalmazásokban</string>
+    <string name="show_private_contacts_n">Személyes névjegyek megjelenítése az AlRight Telefon, Üzenetek és Naptár alkalmazásokban</string>
+    <string name="on_favorite_click">Amikor rákattint egy kedvencre</string>
 
 </resources>

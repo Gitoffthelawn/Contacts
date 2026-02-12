@@ -102,7 +102,7 @@ class ExportContactsDialog(
 
         val contactSourcesWithCount = ArrayList<ContactSource>()
         for (source in contactSources) {
-            val count = contacts.filter { it.source == source.name }.count()
+            val count = contacts.count { it.source == source.name }
             contactSourcesWithCount.add(source.copy(count = count))
         }
 

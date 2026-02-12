@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">آهنگ زنگ برای تماس خصوصی در دسترس نیست</string>
-    <string name="show_private_contacts_g">نمایش مخاطبین خصوصی در شماره‌گیر سمت راست و پیام‌های سمت راست</string>
+    <string name="show_private_contacts_g">نمایش مخاطبین شخصی در برنامه‌های Right Phone، Messages و Calendar</string>
+    <string name="show_private_contacts_n">نمایش مخاطبین شخصی در برنامه‌های AlRight Phone، Messages و Calendar</string>
+    <string name="on_favorite_click">وقتی روی مورد علاقه کلیک می کنید</string>
 </resources>

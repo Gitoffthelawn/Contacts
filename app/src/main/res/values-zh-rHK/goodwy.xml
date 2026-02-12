@@ -7,5 +7,7 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">鈴聲不可用於私人聯繫人</string>
-    <string name="show_private_contacts_g">向 Right Dialer 和 Right Messages 顯示私人聯絡人</string>
+    <string name="show_private_contacts_g">在右側的電話、資訊和日曆應用程式中顯示個人聯絡人</string>
+    <string name="show_private_contacts_n">在 AlRight 電話、資訊和日曆應用程式中顯示個人聯絡人</string>
+    <string name="on_favorite_click">當你點擊收藏夾時</string>
 </resources>

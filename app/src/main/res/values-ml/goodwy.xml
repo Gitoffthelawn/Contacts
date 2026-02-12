@@ -7,6 +7,8 @@
 
     <!-- Settings -->
     <string name="ringtone_for_private_contact">സ്വകാര്യ കോൺടാക്റ്റിന് റിംഗ്ടോൺ ലഭ്യമല്ല.</string>
-    <string name="show_private_contacts_g">വലത് ഡയലറിലേക്കും വലത് സന്ദേശങ്ങളിലേക്കും സ്വകാര്യ കോൺടാക്റ്റുകൾ കാണിക്കുക</string>
+    <string name="show_private_contacts_g">വലത് ഫോൺ, സന്ദേശങ്ങൾ, കലണ്ടർ ആപ്പുകൾ എന്നിവയിൽ വ്യക്തിഗത കോൺടാക്റ്റുകൾ കാണിക്കുക</string>
+    <string name="show_private_contacts_n">AlRight Phone, Messages, Calendar ആപ്പുകൾ എന്നിവയിൽ വ്യക്തിഗത കോൺടാക്റ്റുകൾ കാണിക്കുക</string>
+    <string name="on_favorite_click">പ്രിയപ്പെട്ടതിൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ</string>
 
 </resources>

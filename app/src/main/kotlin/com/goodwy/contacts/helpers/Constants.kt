@@ -3,6 +3,8 @@ package com.goodwy.contacts.helpers
 import com.goodwy.commons.helpers.TAB_CONTACTS
 import com.goodwy.commons.helpers.TAB_FAVORITES
 import com.goodwy.commons.helpers.TAB_GROUPS
+import com.goodwy.commons.models.Release
+import com.goodwy.contacts.R
 
 const val GROUP = "group"
 const val IS_FROM_SIMPLE_CONTACTS = "is_from_simple_contacts"
@@ -57,6 +59,11 @@ const val VIBER = "viber"
 const val TELEGRAM = "telegram"
 const val THREEMA = "threema"
 
+const val ON_FAVORITE_CLICK = "on_favorite_click"
+const val ON_CLICK_CALL_CONTACT = 1
+const val ON_CLICK_VIEW_CONTACT = 2
+const val ON_CLICK_EDIT_CONTACT = 3
+const val ON_CLICK_MESSAGE_CONTACT = 4
 
 // 6 am is the hardcoded automatic backup time, intervals shorter than 1 day are not yet supported.
 //fun getNextAutoBackupTime(): DateTime {
@@ -94,5 +101,22 @@ const val SWIPE_ACTION_DELETE = 2
 const val SWIPE_ACTION_CALL = 5
 const val SWIPE_ACTION_MESSAGE = 6
 const val SWIPE_ACTION_EDIT = 7
+const val SWIPE_ACTION_OPEN = 9
 const val SWIPE_VIBRATION = "swipe_vibration"
 const val SWIPE_RIPPLE = "swipe_ripple"
+
+fun whatsNewList(): ArrayList<Release> {
+    return arrayListOf<Release>().apply {
+        add(Release(500, R.string.release_500))
+        add(Release(510, R.string.release_510))
+        add(Release(520, R.string.release_520))
+        add(Release(521, R.string.release_521))
+        add(Release(522, R.string.release_522))
+        add(Release(524, R.string.release_524))
+        add(Release(610, R.string.release_610))
+        add(Release(612, R.string.release_612))
+        add(Release(620, R.string.release_620))
+        add(Release(700, R.string.release_700))
+        add(Release(820, R.string.release_820))
+    }
+}

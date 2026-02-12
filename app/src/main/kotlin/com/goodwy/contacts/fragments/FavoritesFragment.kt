@@ -2,9 +2,7 @@ package com.goodwy.contacts.fragments
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.recyclerview.widget.RecyclerView
 import com.goodwy.commons.extensions.*
-import com.goodwy.commons.extensions.beVisible
 import com.google.gson.Gson
 import com.goodwy.commons.helpers.CONTACTS_GRID_MAX_COLUMNS_COUNT
 import com.goodwy.commons.helpers.ContactsHelper
@@ -21,6 +19,7 @@ import com.goodwy.contacts.databinding.FragmentFavoritesBinding
 import com.goodwy.contacts.databinding.FragmentLettersLayoutBinding
 import com.goodwy.contacts.dialogs.SelectContactsDialog
 import com.goodwy.contacts.extensions.config
+import com.goodwy.contacts.extensions.viewContact
 import com.goodwy.contacts.helpers.LOCATION_FAVORITES_TAB
 import com.goodwy.contacts.interfaces.RefreshContactsListener
 
@@ -90,9 +89,13 @@ class FavoritesFragment(context: Context, attributeSet: AttributeSet) : MyViewPa
                 removeListener = null,
                 recyclerView = innerBinding.fragmentList,
                 enableDrag = true,
-            ) {
-                (activity as RefreshContactsListener).contactClicked(it as Contact)
-            }.apply {
+                itemClick = {
+                    (activity as RefreshContactsListener).contactClicked(it as Contact, true)
+                },
+                profileIconClick = {
+                    activity?.viewContact(it as Contact)
+                }
+            ).apply {
                 innerBinding.fragmentList.adapter = this
                 setupZoomListener(zoomListener)
                 onDragEndListener = {
