@@ -4,8 +4,8 @@
 <img src="app/src/gplay/res/drawable/ic_launcher.png" width="120" alt="App icon"/>
 
 # Right Contacts/AlRight Contacts
-</div>
 <a href='https://play.google.com/store/apps/details?id=com.goodwy.contacts'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a>  <a href='https://play.google.com/store/apps/details?id=dev.goodwy.contacts'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a>
+</div>
 
 The ultimate app for organizing and customizing your contacts with a focus on privacy. Take control of
 your contact list by creating private contacts that are accessible only within the app,
