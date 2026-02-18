@@ -101,34 +101,47 @@ class ViewContactActivity : ContactActivity() {
 
     private fun initButton() {
         val properPrimaryColor = getProperPrimaryColor()
+        val typeface = FontHelper.getTypeface(this)
 
         var drawableSMS = AppCompatResources.getDrawable(this, R.drawable.ic_messages)
         drawableSMS = DrawableCompat.wrap(drawableSMS!!)
         DrawableCompat.setTint(drawableSMS, properPrimaryColor)
         DrawableCompat.setTintMode(drawableSMS, PorterDuff.Mode.SRC_IN)
-        binding.contactSendSms.setCompoundDrawablesWithIntrinsicBounds(null, drawableSMS, null, null)
-        binding.contactSendSms.setTextColor(properPrimaryColor)
+        binding.contactSendSms.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, drawableSMS, null, null)
+            setTextColor(properPrimaryColor)
+            setTypeface(typeface)
+        }
 
         var drawableCall = AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_phone_vector)
         drawableCall = DrawableCompat.wrap(drawableCall!!)
         DrawableCompat.setTint(drawableCall, properPrimaryColor)
         DrawableCompat.setTintMode(drawableCall, PorterDuff.Mode.SRC_IN)
-        binding.contactStartCall.setCompoundDrawablesWithIntrinsicBounds(null, drawableCall, null, null)
-        binding.contactStartCall.setTextColor(properPrimaryColor)
+        binding.contactStartCall.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, drawableCall, null, null)
+            setTextColor(properPrimaryColor)
+            setTypeface(typeface)
+        }
 
         var drawableVideoCall = AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_videocam_vector)
         drawableVideoCall = DrawableCompat.wrap(drawableVideoCall!!)
         DrawableCompat.setTint(drawableVideoCall, properPrimaryColor)
         DrawableCompat.setTintMode(drawableVideoCall, PorterDuff.Mode.SRC_IN)
-        binding.contactVideoCall.setCompoundDrawablesWithIntrinsicBounds(null, drawableVideoCall, null, null)
-        binding.contactVideoCall.setTextColor(properPrimaryColor)
+        binding.contactVideoCall.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, drawableVideoCall, null, null)
+            setTextColor(properPrimaryColor)
+            setTypeface(typeface)
+        }
 
         var drawableMail = AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_mail_vector)
         drawableMail = DrawableCompat.wrap(drawableMail!!)
         DrawableCompat.setTint(drawableMail, properPrimaryColor)
         DrawableCompat.setTintMode(drawableMail, PorterDuff.Mode.SRC_IN)
-        binding.contactSendEmail.setCompoundDrawablesWithIntrinsicBounds(null, drawableMail, null, null)
-        binding.contactSendEmail.setTextColor(properPrimaryColor)
+        binding.contactSendEmail.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, drawableMail, null, null)
+            setTextColor(properPrimaryColor)
+            setTypeface(typeface)
+        }
     }
 
     private fun updateColors() {

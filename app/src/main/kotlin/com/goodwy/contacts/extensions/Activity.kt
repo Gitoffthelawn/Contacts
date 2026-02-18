@@ -44,7 +44,7 @@ fun SimpleActivity.startCallIntent(recipient: String) {
 }
 
 fun SimpleActivity.tryStartCallRecommendation(contact: Contact) {
-    val isNewApp = isNewApp()
+    val isNewApp = true //isNewApp()
     val simpleDialer = "com.goodwy.dialer"
     val simpleDialerDebug = "com.goodwy.dialer.debug"
     val newSimpleDialer = "dev.goodwy.phone"
@@ -71,17 +71,19 @@ fun SimpleActivity.tryStartCallRecommendation(contact: Contact) {
 }
 
 fun Activity.newAppRecommendation() {
-    if (!isNewApp()) {
-        if ((0..config.newAppRecommendationDialogCount).random() == 2) {
-            val packageName = "stcatnoc.ywdoog.ved".reversed()
-            NewAppDialog(
-                activity = this,
-                packageName = packageName,
-                title = getString(com.goodwy.strings.R.string.notification_of_new_application),
-                text = "AlRight Contacts",
-                drawable = AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_contacts_new),
-                showSubtitle = true
-            ) {
+    if (resources.getBoolean(com.goodwy.commons.R.bool.is_foss)) {
+        if (!isNewApp()) {
+            if ((0..config.newAppRecommendationDialogCount).random() == 2) {
+                val packageName = "stcatnoc.ywdoog.ved".reversed()
+                NewAppDialog(
+                    activity = this,
+                    packageName = packageName,
+                    title = getString(com.goodwy.strings.R.string.notification_of_new_application),
+                    text = "AlRight Contacts",
+                    drawable = AppCompatResources.getDrawable(this, com.goodwy.commons.R.drawable.ic_contacts_new),
+                    showSubtitle = true
+                ) {
+                }
             }
         }
     }
