@@ -883,7 +883,7 @@ class SettingsActivity : SimpleActivity() {
                 items = items,
                 checkedItemId = config.contactColorList,
                 defaultItemId = LBC_ANDROID,
-                titleId = com.goodwy.strings.R.string.overflow_icon
+                titleId = com.goodwy.strings.R.string.contact_color_list
             ) { wasPositivePressed, newValue ->
                 if (wasPositivePressed) {
                     if (config.contactColorList != newValue) {
@@ -1098,7 +1098,7 @@ class SettingsActivity : SimpleActivity() {
 
     private fun launchPurchase() {
         startPurchaseActivity(
-            R.string.app_name_g,
+            R.string.app_name,
             productIdList = arrayListOf(productIdX1, productIdX2, productIdX3),
             productIdListRu = arrayListOf(productIdX1, productIdX2, productIdX3),
             subscriptionIdList = arrayListOf(subscriptionIdX1, subscriptionIdX2, subscriptionIdX3),

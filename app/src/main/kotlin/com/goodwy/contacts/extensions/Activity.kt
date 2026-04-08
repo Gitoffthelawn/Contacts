@@ -297,7 +297,7 @@ fun SimpleActivity.launchAbout() {
     val fullVersionText = "$versionName ($storeDisplayName)"
 
     startAboutActivity(
-        appNameId = R.string.app_name_g,
+        appNameId = R.string.app_name,
         licenseMask = licenses,
         versionName = fullVersionText,
         flavorName = BuildConfig.FLAVOR,

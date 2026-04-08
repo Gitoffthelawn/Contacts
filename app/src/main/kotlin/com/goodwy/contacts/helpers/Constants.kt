@@ -48,17 +48,6 @@ const val HOME_FAX = "HOME;FAX"
 const val PAGER = "PAGER"
 const val MOBILE = "MOBILE"
 
-// IMs not supported by Ez-vcard
-const val HANGOUTS = "Hangouts"
-const val QQ = "QQ"
-const val JABBER = "Jabber"
-
-const val WHATSAPP = "whatsapp"
-const val SIGNAL = "signal"
-const val VIBER = "viber"
-const val TELEGRAM = "telegram"
-const val THREEMA = "threema"
-
 const val ON_FAVORITE_CLICK = "on_favorite_click"
 const val ON_CLICK_CALL_CONTACT = 1
 const val ON_CLICK_VIEW_CONTACT = 2

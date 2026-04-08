@@ -19,7 +19,7 @@ room = "2.8.4"
 #Gradle
 gradlePlugins-agp = "8.11.1"
 #Goodwy
-right-commons = "e7ec5a12d6"
+right-commons = "d130cdc470"
 behavioRule = "1.0.1"
 rxAnimation = "2.1.1"
 rxJava3 = "3.1.5"

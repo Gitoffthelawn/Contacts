@@ -25,6 +25,7 @@ import androidx.core.view.MenuItemCompat
 import androidx.viewpager.widget.ViewPager
 import com.goodwy.commons.databases.ContactsDatabase
 import com.goodwy.commons.databinding.BottomTablayoutItemBinding
+import com.goodwy.commons.dialogs.ConfirmationAdvancedDialog
 import com.goodwy.commons.dialogs.ConfirmationDialog
 import com.goodwy.commons.dialogs.NewAppDialog
 import com.goodwy.commons.dialogs.RadioGroupDialog
@@ -918,37 +919,44 @@ class MainActivity : SimpleActivity(), RefreshContactsListener {
     }
 
     private fun checkErrorDialog() {
-        if (baseConfig.lastError != "") {
-            ConfirmationDialog(
-                this,
-                "An error occurred while the application was running. Please send us this error so we can fix it.",
-                positive = com.goodwy.commons.R.string.send_email
-            ) {
-                val appName = getString(R.string.app_name_g)
-                val versionName = BuildConfig.VERSION_NAME
-                val body = "$appName($versionName) : LastError"
-                val address = getMyMailString()
-                val lastError = baseConfig.lastError
+        if (baseConfig.showErrorDialog) {
+            if (baseConfig.lastError != "") {
+                ConfirmationAdvancedDialog(
+                    this,
+                    "An error occurred while the application was running. Please send us this error so we can fix it.",
+                    positive = com.goodwy.commons.R.string.send_email,
+                    negative = com.goodwy.commons.R.string.do_not_show_again,
+                ) {
+                    if (it) {
+                        val appName = getString(R.string.app_name)
+                        val versionName = BuildConfig.VERSION_NAME
+                        val body = "$appName($versionName) : LastError"
+                        val address = getMyMailString()
+                        val lastError = baseConfig.lastError
 
-                val emailIntent = Intent(ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
-                    putExtra(Intent.EXTRA_SUBJECT, body)
-                    putExtra(Intent.EXTRA_TEXT, lastError)
+                        val emailIntent = Intent(ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
+                            putExtra(Intent.EXTRA_SUBJECT, body)
+                            putExtra(Intent.EXTRA_TEXT, lastError)
 
-                    // set the type for better compatibility
-                    type = "message/rfc822"
+                            // set the type for better compatibility
+                            type = "message/rfc822"
+                        }
+
+                        try {
+                            startActivity(Intent.createChooser(emailIntent, "Send email"))
+                        } catch (_: ActivityNotFoundException) {
+                            toast(com.goodwy.commons.R.string.no_app_found)
+                        } catch (e: Exception) {
+                            showErrorToast(e)
+                        }
+
+                        baseConfig.lastError = ""
+                    } else {
+                        baseConfig.showErrorDialog = false
+                    }
                 }
-
-                try {
-                    startActivity(Intent.createChooser(emailIntent, "Send email"))
-                } catch (_: ActivityNotFoundException) {
-                    toast(com.goodwy.commons.R.string.no_app_found)
-                } catch (e: Exception) {
-                    showErrorToast(e)
-                }
-
-                baseConfig.lastError = ""
             }
         }
     }

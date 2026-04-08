@@ -14,6 +14,43 @@ import com.goodwy.commons.extensions.showErrorToast
 import com.goodwy.commons.extensions.toast
 import com.goodwy.commons.helpers.ContactsHelper
 import com.goodwy.commons.helpers.DEFAULT_MIMETYPE
+import com.goodwy.commons.helpers.DISCORD
+import com.goodwy.commons.helpers.FACEBOOK
+import com.goodwy.commons.helpers.GOOGLE_CHAT
+import com.goodwy.commons.helpers.HANGOUTS
+import com.goodwy.commons.helpers.INSTAGRAM
+import com.goodwy.commons.helpers.JABBER
+import com.goodwy.commons.helpers.LINE
+import com.goodwy.commons.helpers.LINKEDIN
+import com.goodwy.commons.helpers.MATRIX
+import com.goodwy.commons.helpers.MAX
+import com.goodwy.commons.helpers.PROTOCOL_DISCORD
+import com.goodwy.commons.helpers.PROTOCOL_FACEBOOK
+import com.goodwy.commons.helpers.PROTOCOL_GOOGLE_CHAT
+import com.goodwy.commons.helpers.PROTOCOL_INSTAGRAM
+import com.goodwy.commons.helpers.PROTOCOL_LINE
+import com.goodwy.commons.helpers.PROTOCOL_LINKEDIN
+import com.goodwy.commons.helpers.PROTOCOL_MATRIX
+import com.goodwy.commons.helpers.PROTOCOL_MAX
+import com.goodwy.commons.helpers.PROTOCOL_SIGNAL
+import com.goodwy.commons.helpers.PROTOCOL_TEAMS
+import com.goodwy.commons.helpers.PROTOCOL_TELEGRAM
+import com.goodwy.commons.helpers.PROTOCOL_THREEMA
+import com.goodwy.commons.helpers.PROTOCOL_TWITTER
+import com.goodwy.commons.helpers.PROTOCOL_VIBER
+import com.goodwy.commons.helpers.PROTOCOL_WECHAT
+import com.goodwy.commons.helpers.PROTOCOL_WECOM
+import com.goodwy.commons.helpers.PROTOCOL_WHATSAPP
+import com.goodwy.commons.helpers.QQ
+import com.goodwy.commons.helpers.SIGNAL
+import com.goodwy.commons.helpers.TEAMS
+import com.goodwy.commons.helpers.TELEGRAM
+import com.goodwy.commons.helpers.THREEMA
+import com.goodwy.commons.helpers.TWITTER
+import com.goodwy.commons.helpers.VIBER
+import com.goodwy.commons.helpers.WECHAT
+import com.goodwy.commons.helpers.WECOM
+import com.goodwy.commons.helpers.WHATSAPP
 import com.goodwy.commons.models.PhoneNumber
 import com.goodwy.commons.models.contacts.Address
 import com.goodwy.commons.models.contacts.Contact
@@ -282,6 +319,23 @@ class VcfImporter(val activity: SimpleActivity) {
                         typeString == HANGOUTS -> Im.PROTOCOL_GOOGLE_TALK
                         typeString == QQ -> Im.PROTOCOL_QQ
                         typeString == JABBER -> Im.PROTOCOL_JABBER
+                        typeString == WHATSAPP -> PROTOCOL_WHATSAPP
+                        typeString == SIGNAL -> PROTOCOL_SIGNAL
+                        typeString == VIBER -> PROTOCOL_VIBER
+                        typeString == TELEGRAM -> PROTOCOL_TELEGRAM
+                        typeString == THREEMA -> PROTOCOL_THREEMA
+                        typeString == TEAMS -> PROTOCOL_TEAMS
+                        typeString == WECOM -> PROTOCOL_WECOM
+                        typeString == GOOGLE_CHAT -> PROTOCOL_GOOGLE_CHAT
+                        typeString == MATRIX -> PROTOCOL_MATRIX
+                        typeString == DISCORD -> PROTOCOL_DISCORD
+                        typeString == WECHAT -> PROTOCOL_WECHAT
+                        typeString == LINE -> PROTOCOL_LINE
+                        typeString == INSTAGRAM -> PROTOCOL_INSTAGRAM
+                        typeString == FACEBOOK -> PROTOCOL_FACEBOOK
+                        typeString == TWITTER -> PROTOCOL_TWITTER
+                        typeString == LINKEDIN -> PROTOCOL_LINKEDIN
+                        typeString == MAX -> PROTOCOL_MAX
                         else -> Im.PROTOCOL_CUSTOM
                     }
 

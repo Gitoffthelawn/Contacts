@@ -12,6 +12,43 @@ import com.goodwy.commons.extensions.getDateTimeFromDateString
 import com.goodwy.commons.extensions.showErrorToast
 import com.goodwy.commons.extensions.toast
 import com.goodwy.commons.helpers.CUSTOM_EVENT_TYPE_DEATH
+import com.goodwy.commons.helpers.DISCORD
+import com.goodwy.commons.helpers.FACEBOOK
+import com.goodwy.commons.helpers.GOOGLE_CHAT
+import com.goodwy.commons.helpers.HANGOUTS
+import com.goodwy.commons.helpers.INSTAGRAM
+import com.goodwy.commons.helpers.JABBER
+import com.goodwy.commons.helpers.LINE
+import com.goodwy.commons.helpers.LINKEDIN
+import com.goodwy.commons.helpers.MATRIX
+import com.goodwy.commons.helpers.MAX
+import com.goodwy.commons.helpers.PROTOCOL_DISCORD
+import com.goodwy.commons.helpers.PROTOCOL_FACEBOOK
+import com.goodwy.commons.helpers.PROTOCOL_GOOGLE_CHAT
+import com.goodwy.commons.helpers.PROTOCOL_INSTAGRAM
+import com.goodwy.commons.helpers.PROTOCOL_LINE
+import com.goodwy.commons.helpers.PROTOCOL_LINKEDIN
+import com.goodwy.commons.helpers.PROTOCOL_MATRIX
+import com.goodwy.commons.helpers.PROTOCOL_MAX
+import com.goodwy.commons.helpers.PROTOCOL_SIGNAL
+import com.goodwy.commons.helpers.PROTOCOL_TEAMS
+import com.goodwy.commons.helpers.PROTOCOL_TELEGRAM
+import com.goodwy.commons.helpers.PROTOCOL_THREEMA
+import com.goodwy.commons.helpers.PROTOCOL_TWITTER
+import com.goodwy.commons.helpers.PROTOCOL_VIBER
+import com.goodwy.commons.helpers.PROTOCOL_WECHAT
+import com.goodwy.commons.helpers.PROTOCOL_WECOM
+import com.goodwy.commons.helpers.PROTOCOL_WHATSAPP
+import com.goodwy.commons.helpers.QQ
+import com.goodwy.commons.helpers.SIGNAL
+import com.goodwy.commons.helpers.TEAMS
+import com.goodwy.commons.helpers.TELEGRAM
+import com.goodwy.commons.helpers.THREEMA
+import com.goodwy.commons.helpers.TWITTER
+import com.goodwy.commons.helpers.VIBER
+import com.goodwy.commons.helpers.WECHAT
+import com.goodwy.commons.helpers.WECOM
+import com.goodwy.commons.helpers.WHATSAPP
 import com.goodwy.commons.models.contacts.Contact
 import com.goodwy.commons.models.contacts.ContactRelation
 import com.goodwy.contacts.helpers.VcfExporter.ExportResult.EXPORT_FAIL
@@ -194,7 +231,38 @@ class VcfExporter {
                         Im.PROTOCOL_GOOGLE_TALK -> Impp(HANGOUTS, it.value)
                         Im.PROTOCOL_QQ -> Impp(QQ, it.value)
                         Im.PROTOCOL_JABBER -> Impp(JABBER, it.value)
-                        else -> Impp(it.label, it.value)
+                        PROTOCOL_WHATSAPP -> Impp(WHATSAPP, it.value)
+                        PROTOCOL_SIGNAL -> Impp(SIGNAL, it.value)
+                        PROTOCOL_VIBER -> Impp(VIBER, it.value)
+                        PROTOCOL_TELEGRAM -> Impp(TELEGRAM, it.value)
+                        PROTOCOL_THREEMA -> Impp(THREEMA, it.value)
+                        PROTOCOL_TEAMS -> Impp(TEAMS, it.value)
+                        PROTOCOL_WECOM -> Impp(WECOM, it.value)
+                        PROTOCOL_GOOGLE_CHAT -> Impp(GOOGLE_CHAT, it.value)
+                        PROTOCOL_MATRIX -> Impp(MATRIX, it.value)
+                        PROTOCOL_DISCORD -> Impp(DISCORD, it.value)
+                        PROTOCOL_WECHAT -> Impp(WECHAT, it.value)
+                        PROTOCOL_LINE -> Impp(LINE, it.value)
+                        PROTOCOL_INSTAGRAM -> Impp(INSTAGRAM, it.value)
+                        PROTOCOL_FACEBOOK -> Impp(FACEBOOK, it.value)
+                        PROTOCOL_TWITTER -> Impp(TWITTER, it.value)
+                        PROTOCOL_LINKEDIN -> Impp(LINKEDIN, it.value)
+                        PROTOCOL_MAX -> Impp(MAX, it.value)
+//                        else -> Impp(it.label, it.value)
+                        else -> {
+                            // We check whether the value is a valid URI
+                            if (it.value.matches(Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:.*$"))) {
+                                Impp(it.label, it.value)
+                            } else {
+                                // We use the XMPP scheme for the JID format
+                                if (it.value.contains("@") && !it.value.contains(":")) {
+                                    Impp("xmpp", it.value)
+                                } else {
+                                    // Skip invalid IM
+                                    return@forEach
+                                }
+                            }
+                        }
                     }
 
                     card.addImpp(impp)
